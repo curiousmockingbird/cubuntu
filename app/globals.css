@@ -1,0 +1,79 @@
+:root {
+  --fg: #0f172a;
+  --muted: #475569;
+  --bg: #ffffff;
+  --border: #e2e8f0;
+  --accent: #2563eb;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+.container {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.site-header {
+  margin-bottom: 24px;
+}
+
+.site-header h1 {
+  margin: 0 0 4px;
+}
+
+.site-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.site-footer {
+  margin-top: 40px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.episode-list { 
+  display: grid; 
+  gap: 16px; 
+}
+
+.episode-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.episode-card h3 {
+  margin: 0 0 4px;
+}
+
+.episode-meta {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.episode-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.link:hover { text-decoration: underline; }
+
+audio { width: 100%; margin-top: 8px; }
+

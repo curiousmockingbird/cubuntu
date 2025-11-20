@@ -1,0 +1,11 @@
+{
+  "name": "Podcast MVP",
+  "short_name": "Podcast",
+  "description": "A simple podcast site with in-browser audio playback.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": []
+}
+
