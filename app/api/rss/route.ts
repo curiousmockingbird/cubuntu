@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { episodes } from '../../../data/episodes';
+import { episodes } from '../../../data/episodes/index';
 
 export const revalidate = 3600;
 
@@ -20,7 +20,7 @@ function esc(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
-function buildRss({ site, episodes }: { site: string; episodes: typeof import('../../../data/episodes').episodes }) {
+function buildRss({ site, episodes }: { site: string; episodes: typeof import('../../../data/episodes/index').episodes }) {
   const items = episodes
     .map(
       (e) => `
@@ -46,4 +46,3 @@ function buildRss({ site, episodes }: { site: string; episodes: typeof import('.
   </channel>
 </rss>`;
 }
-

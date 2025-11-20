@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { episodes } from '../data/episodes';
+import { episodes } from '../data/episodes/index';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -9,4 +9,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
   return items;
 }
-

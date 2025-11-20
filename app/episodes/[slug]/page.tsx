@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import AudioPlayer from '../../../components/AudioPlayer';
-import { episodes } from '../../../data/episodes';
+import { episodes } from '../../../data/episodes/index';
 
 type Params = { params: { slug: string } };
 
@@ -52,4 +52,3 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     },
   };
 }
-

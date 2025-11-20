@@ -23,7 +23,7 @@ Project Structure
   - `page.tsx` — episodes list
   - `episodes/[slug]/page.tsx` — episode detail
 - `components/AudioPlayer.tsx` — simple HTML5 audio wrapper
-- `data/episodes.ts` — sample data with remote MP3 URLs
+- `data/episodes/` — one file per episode + index aggregator
 - `app/api/rss/route.ts` — RSS feed (TypeScript)
 - `app/globals.css` — light styles for layout and cards
 

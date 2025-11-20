@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import AudioPlayer from '../components/AudioPlayer';
-import { episodes } from '../data/episodes';
+import { episodes } from '../data/episodes/index';
 
 export const revalidate = 3600;
 
@@ -37,4 +37,3 @@ export default function HomePage() {
     </section>
   );
 }
-
