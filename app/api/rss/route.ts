@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { episodes } from '../../../data/episodes/index';
+import { getAllEpisodes } from '../../../lib/episodes';
 
 export const revalidate = 3600;
 
 export async function GET() {
   const site = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const episodes = await getAllEpisodes();
   const feed = buildRss({ site, episodes });
   return new NextResponse(feed, {
     headers: { 'Content-Type': 'application/rss+xml; charset=utf-8' },
@@ -20,7 +21,7 @@ function esc(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
-function buildRss({ site, episodes }: { site: string; episodes: typeof import('../../../data/episodes/index').episodes }) {
+function buildRss({ site, episodes }: { site: string; episodes: Awaited<ReturnType<typeof getAllEpisodes>> }) {
   const items = episodes
     .map(
       (e) => `

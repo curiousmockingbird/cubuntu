@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import AudioPlayer from '../components/AudioPlayer';
-import { episodes } from '../data/episodes/index';
+import { getAllEpisodes } from '../lib/episodes';
 
 export const revalidate = 3600;
 
@@ -9,7 +9,8 @@ export const metadata = {
   description: 'Browse and play the latest podcast episodes.',
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const episodes = await getAllEpisodes();
   return (
     <section>
       <h2>Latest Episodes</h2>

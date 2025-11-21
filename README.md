@@ -23,7 +23,7 @@ Project Structure
   - `page.tsx` — episodes list
   - `episodes/[slug]/page.tsx` — episode detail
 - `components/AudioPlayer.tsx` — simple HTML5 audio wrapper
-- `data/episodes/` — one file per episode + index aggregator
+- `data/episodes/` — one file per episode as `.json`
 - `app/api/rss/route.ts` — RSS feed (TypeScript)
 - `app/globals.css` — light styles for layout and cards
 
@@ -31,6 +31,10 @@ Notes
 - Sample MP3s are hosted remotely (SoundHelix) and stream in the browser.
 - Replace `data/episodes.js` with your own content or wire up a CMS/API.
 - If you prefer a richer player UI, consider `react-h5-audio-player`.
+
+Episodes data (JSON)
+- Each episode lives in `data/episodes/*.json` and is loaded server-side via `lib/episodes.ts`.
+- To add a new episode, create a new JSON file with the same shape as the examples.
 
 Git LFS (for audio)
 - This repo tracks audio files with Git LFS via `.gitattributes`.

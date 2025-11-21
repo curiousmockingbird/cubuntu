@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import AudioPlayer from '../../../components/AudioPlayer';
-import { episodes } from '../../../data/episodes/index';
+import { getEpisodeBySlug, getEpisodeSlugs } from '../../../lib/episodes';
 
 type Params = { params: { slug: string } };
 
-export default function EpisodePage({ params }: Params) {
-  const episode = episodes.find((e) => e.slug === params.slug);
+export default async function EpisodePage({ params }: Params) {
+  const episode = await getEpisodeBySlug(params.slug);
   if (!episode) return notFound();
 
   return (
@@ -27,13 +27,14 @@ export default function EpisodePage({ params }: Params) {
 }
 
 export async function generateStaticParams() {
-  return episodes.map((e) => ({ slug: e.slug }));
+  const slugs = await getEpisodeSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export const dynamicParams = false;
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const episode = episodes.find((e) => e.slug === params.slug);
+  const episode = await getEpisodeBySlug(params.slug);
   if (!episode) return {};
   const title = `${episode.title} • Podcast MVP`;
   const description = episode.description;

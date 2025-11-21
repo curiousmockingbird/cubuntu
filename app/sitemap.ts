@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next';
-import { episodes } from '../data/episodes/index';
+import { getAllEpisodes } from '../lib/episodes';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const items: MetadataRoute.Sitemap = [
+  const episodes = await getAllEpisodes();
+  return [
     { url: `${base}/`, lastModified: new Date() },
     ...episodes.map((e) => ({ url: `${base}/episodes/${e.slug}`, lastModified: new Date(e.date) })),
   ];
-  return items;
 }
