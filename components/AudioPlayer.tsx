@@ -180,17 +180,17 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
         </div>
       ) : (
         <>
-          <div className="mb-2 flex items-center gap-3">
-            <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={() => back(15)} aria-label="Back 15 seconds">⏪ 15s</button>
-            <button className="rounded-md border border-blue-600 bg-blue-600 px-3 py-1.5 text-white hover:brightness-95" onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <button className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm md:px-3 md:py-1.5 hover:bg-slate-100" onClick={() => back(15)} aria-label="Back 15 seconds">⏪ 15s</button>
+            <button className="rounded-md border border-blue-600 bg-blue-600 px-2 py-1 text-sm md:px-3 md:py-1.5 text-white hover:brightness-95" onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
               {isPlaying ? '⏸️ Pause' : '▶️ Play'}
             </button>
-            <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={() => forward(30)} aria-label="Forward 30 seconds">30s ⏩</button>
-            <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={cycleRate} aria-label="Change speed">{rate.toFixed(2)}x</button>
-            <div className="flex-1" />
-            <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={toggleMute} aria-label={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button>
+            <button className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm md:px-3 md:py-1.5 hover:bg-slate-100" onClick={() => forward(30)} aria-label="Forward 30 seconds">30s ⏩</button>
+            <button className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm md:px-3 md:py-1.5 hover:bg-slate-100" onClick={cycleRate} aria-label="Change speed">{rate.toFixed(2)}x</button>
+            <div className="flex-1 min-w-0" />
+            <button className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm md:px-3 md:py-1.5 hover:bg-slate-100" onClick={toggleMute} aria-label={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button>
             <input
-              className="w-[110px]"
+              className="w-24 md:w-[110px]"
               type="range"
               min={0}
               max={1}
@@ -202,11 +202,11 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="w-14 text-center text-slate-500 tabular-nums" aria-label="Elapsed time">{fmt(time)}</div>
-            <div className="relative flex h-6 flex-1 items-center">
+            <div className="w-12 md:w-14 text-center text-slate-500 tabular-nums" aria-label="Elapsed time">{fmt(time)}</div>
+            <div className="relative flex h-6 flex-1 items-center min-w-0">
               <div className="pointer-events-none absolute left-0 top-1/2 h-1 w-0 -translate-y-1/2 rounded bg-slate-200" style={{ width: `${bufferedPct}%` }} aria-hidden />
               <input
-                className="w-full"
+                className="w-full min-w-0"
                 type="range"
                 min={0}
                 max={Math.max(1, duration)}
@@ -218,7 +218,7 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
                 aria-label="Seek"
               />
             </div>
-            <div className="w-14 text-center text-slate-500 tabular-nums" aria-label="Total time">{fmt(duration)}</div>
+            <div className="w-12 md:w-14 text-center text-slate-500 tabular-nums" aria-label="Total time">{fmt(duration)}</div>
           </div>
         </>
       )}
