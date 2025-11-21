@@ -1,8 +1,8 @@
-import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import AudioPlayer from '../../../components/AudioPlayer';
-import { getEpisodeBySlug, getEpisodeSlugs } from '../../../lib/episodes';
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Image from "next/image";
+import AudioPlayer from "../../../components/AudioPlayer";
+import { getEpisodeBySlug, getEpisodeSlugs } from "../../../lib/episodes";
 
 type Params = { params: { slug: string } };
 
@@ -11,28 +11,49 @@ export default async function EpisodePage({ params }: Params) {
   if (!episode) return notFound();
 
   return (
-    <article className="grid grid-cols-[280px_1fr] gap-4 rounded-xl border border-slate-200 p-4 md:grid-cols-1">
-      <div className="w-full overflow-hidden rounded-lg bg-slate-100">
-        <Image
-          src={episode.image || '/images/placeholder.svg'}
-          alt={episode.title}
-          width={800}
-          height={800}
-          className="h-auto w-full"
-          priority
-        />
+    <article className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+      {/* Row 1: image (left) and audio player (right) */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
+        {/* Image */}
+        <div className="w-full overflow-hidden rounded-lg bg-slate-100">
+          <Image
+            src={episode.image || "/images/placeholder.svg"}
+            alt={episode.title}
+            width={800}
+            height={800}
+            className="h-48 w-full object-cover md:h-auto"
+            priority
+          />
+        </div>
+
+        {/* Audio player */}
+        <div className="flex items-start md:items-center">
+          <AudioPlayer src={episode.audioUrl} />
+        </div>
       </div>
-      <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold">{episode.title}</h2>
-        <p className="muted">
-          {new Date(episode.date).toLocaleDateString()} • {episode.duration}
-        </p>
-        <AudioPlayer src={episode.audioUrl} />
-        <section className="mt-2">
+
+      {/* Row 2: title, meta, description, show notes */}
+      <div className="mt-6">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {episode.title}
+        </h1>
+
+        {/* Meta badges */}
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">
+            📅 {new Date(episode.date).toLocaleDateString()}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">
+            ⏱️ {episode.duration}
+          </span>
+        </div>
+
+        {/* Description + show notes */}
+        <section className="mt-4 space-y-2 text-slate-700">
           <p>{episode.description}</p>
-          {episode.showNotes && episode.showNotes.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+
+          {episode.showNotes &&
+            episode.showNotes.map((p, i) => <p key={i}>{p}</p>)}
         </section>
       </div>
     </article>
@@ -57,10 +78,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      type: 'article',
+      type: "article",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
     },
