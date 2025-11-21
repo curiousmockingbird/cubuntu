@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import AudioPlayer from '../../../components/AudioPlayer';
 import { getEpisodeBySlug, getEpisodeSlugs } from '../../../lib/episodes';
+import styles from './page.module.css';
 
 type Params = { params: { slug: string } };
 
@@ -10,19 +12,33 @@ export default async function EpisodePage({ params }: Params) {
   if (!episode) return notFound();
 
   return (
-    <article>
-      <h2>{episode.title}</h2>
-      <p className="episode-meta">
-        {new Date(episode.date).toLocaleDateString()} • {episode.duration}
-      </p>
-      <AudioPlayer src={episode.audioUrl} />
-      <section style={{ marginTop: 16 }}>
-        <p>{episode.description}</p>
-        {episode.showNotes && episode.showNotes.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </section>
+    <>
+    <article className={styles.card}>
+      <div className={styles.imageWrap}>
+        <Image
+          src={episode.image || '/images/placeholder.svg'}
+          alt={episode.title}
+          width={800}
+          height={800}
+          style={{ width: '100%', height: 'auto' }}
+          priority
+        />
+      </div>
+      <div className={styles.content}>
+        <h2>{episode.title}</h2>
+        <p className="episode-meta">
+          {new Date(episode.date).toLocaleDateString()} • {episode.duration}
+        </p>
+        <AudioPlayer src={episode.audioUrl} />
+      </div>
     </article>
+        <section style={{ marginTop: 8 }}>
+          <p>{episode.description}</p>
+          {episode.showNotes && episode.showNotes.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </section>
+        </>
   );
 }
 

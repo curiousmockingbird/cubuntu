@@ -3,11 +3,11 @@
   "title": "Welcome to the Show",
   "date": "2024-01-15",
   "duration": "08:24",
-  "description": "Kickoff episode introducing the podcast, goals, and format.",
+  "description": "Kickoff episode introducing the podcast, goals, and format. Get ready for exciting content ahead!",
   "audioUrl": "audio/deep-dive-into-mvp.mp3",
+  "image": "https://res.cloudinary.com/graphicdesignportfolio/image/upload/v1732208724/logo_wxm819.png",
   "showNotes": [
     "In this episode we outline the vision for the podcast.",
     "We also cover what to expect in upcoming episodes."
   ]
 }
-

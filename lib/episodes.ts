@@ -8,6 +8,7 @@ export type Episode = {
   duration: string;
   description: string;
   audioUrl: string;
+  image?: string;
   showNotes?: string[];
 };
 
@@ -49,4 +50,3 @@ export async function getEpisodeBySlug(slug: string): Promise<Episode | null> {
   if (!fs.existsSync(file)) return null;
   return readEpisodeFile(file);
 }
-
