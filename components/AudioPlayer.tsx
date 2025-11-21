@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './AudioPlayer.module.css';
+import { notifyPlay, registerPlayer } from '../lib/audioManager';
 
 type Props = {
   src: string | null | undefined;
@@ -29,9 +30,14 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
     const a = audioRef.current;
     if (!a) return;
 
+    const unregister = registerPlayer(a);
+
     const onLoaded = () => setDuration(a.duration || 0);
     const onTime = () => setTime(a.currentTime || 0);
-    const onPlay = () => setIsPlaying(true);
+    const onPlay = () => {
+      setIsPlaying(true);
+      notifyPlay(a);
+    };
     const onPause = () => setIsPlaying(false);
     const onProgress = () => {
       try {
@@ -71,6 +77,7 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
       a.removeEventListener('pause', onPause);
       a.removeEventListener('volumechange', onVolume);
       a.removeEventListener('ended', onEnded);
+      unregister();
     };
   }, [src]);
 
@@ -78,6 +85,7 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
     const a = audioRef.current;
     if (!a) return;
     if (a.paused) {
+      notifyPlay(a);
       a.play().catch(() => {});
     } else {
       a.pause();
