@@ -6,7 +6,7 @@ const episode: Episode = {
   date: '2024-02-03',
   duration: '14:02',
   description: 'What makes a good MVP? Scope, speed, and validation.',
-  audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  audioUrl: '/audio/deep-dive-into-mvp.mp3',
   showNotes: [
     'Discussed the importance of focusing on core value.',
     'Shared tips for prioritizing features and collecting feedback.',
