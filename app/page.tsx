@@ -15,7 +15,7 @@ export default async function HomePage() {
   return (
     <section>
       <h2 className="mb-4 text-2xl font-semibold tracking-tight">Latest Episodes</h2>
-      <div className="grid gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {episodes.map((ep) => (
           <article
             key={ep.slug}
@@ -26,9 +26,10 @@ export default async function HomePage() {
                 <Image
                   src={ep.image || '/images/placeholder.svg'}
                   alt={ep.title}
-                  width={800}
-                  height={800}
-                  className="h-auto w-full transform transition-transform duration-300 ease-out group-hover:scale-[1.02]"
+                  width={160}
+                  height={160}
+                  sizes="(max-width: 640px) 100vw, 160px"
+                  className="h-full w-full object-cover transform transition-transform duration-300 ease-out group-hover:scale-[1.02]"
                 />
               </Link>
             </div>
