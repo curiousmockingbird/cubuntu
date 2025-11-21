@@ -31,3 +31,14 @@ Notes
 - Sample MP3s are hosted remotely (SoundHelix) and stream in the browser.
 - Replace `data/episodes.js` with your own content or wire up a CMS/API.
 - If you prefer a richer player UI, consider `react-h5-audio-player`.
+
+Git LFS (for audio)
+- This repo tracks audio files with Git LFS via `.gitattributes`.
+- Setup locally:
+  - Install LFS: `git lfs install`
+  - Commit attributes: `git add .gitattributes && git commit -m "chore: enable Git LFS for audio"`
+  - Add or re-add audio under `public/audio/` (e.g., `public/audio/episode.mp3`) and commit.
+- If audio was already committed without LFS, rewrite history (destructive):
+  - `git lfs migrate import --include="*.mp3,*.m4a,*.aac,*.flac,*.wav,*.ogg,*.oga,*.opus,*.aiff,*.aif"`
+  - Force-push the branch to remote if needed (be careful on shared repos).
+- Verify tracking: `git lfs ls-files`
