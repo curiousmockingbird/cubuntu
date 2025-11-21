@@ -1,5 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import SiteHeader from '../components/SiteHeader';
+import SiteFooter from '../components/SiteFooter';
 
 const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -34,17 +36,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <div className="container">
-          <header className="site-header">
-            <h1>Podcast MVP</h1>
-            <p>A minimal podcast website built with Next.js</p>
-          </header>
+          <SiteHeader />
           <main>{children}</main>
-          <footer className="site-footer">
-            <small>© {new Date().getFullYear()} Podcast MVP</small>
-          </footer>
+          <SiteFooter />
         </div>
       </body>
     </html>
   );
 }
-
