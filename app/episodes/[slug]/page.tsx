@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import AudioPlayer from '../../../components/AudioPlayer';
 import { getEpisodeBySlug, getEpisodeSlugs } from '../../../lib/episodes';
-import styles from './page.module.css';
 
 type Params = { params: { slug: string } };
 
@@ -12,33 +11,31 @@ export default async function EpisodePage({ params }: Params) {
   if (!episode) return notFound();
 
   return (
-    <>
-    <article className={styles.card}>
-      <div className={styles.imageWrap}>
+    <article className="grid grid-cols-[280px_1fr] gap-4 rounded-xl border border-slate-200 p-4 md:grid-cols-1">
+      <div className="w-full overflow-hidden rounded-lg bg-slate-100">
         <Image
           src={episode.image || '/images/placeholder.svg'}
           alt={episode.title}
           width={800}
           height={800}
-          style={{ width: '100%', height: 'auto' }}
+          className="h-auto w-full"
           priority
         />
       </div>
-      <div className={styles.content}>
-        <h2>{episode.title}</h2>
-        <p className="episode-meta">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-xl font-semibold">{episode.title}</h2>
+        <p className="muted">
           {new Date(episode.date).toLocaleDateString()} • {episode.duration}
         </p>
         <AudioPlayer src={episode.audioUrl} />
-      </div>
-    </article>
-        <section style={{ marginTop: 8 }}>
+        <section className="mt-2">
           <p>{episode.description}</p>
           {episode.showNotes && episode.showNotes.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
         </section>
-        </>
+      </div>
+    </article>
   );
 }
 

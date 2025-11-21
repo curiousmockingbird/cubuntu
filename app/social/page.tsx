@@ -9,34 +9,33 @@ export const metadata: Metadata = {
 export default function SocialPage() {
   return (
     <section>
-      <h2>Social Media</h2>
-      <p>Follow the show and reach out on these platforms:</p>
-      <ul>
+      <h2 className="mb-2 text-xl font-semibold">Social Media</h2>
+      <p className="mb-2">Follow the show and reach out on these platforms:</p>
+      <ul className="list-disc pl-6">
         <li>
-          <Link className="link" href="#" aria-disabled>
+          <Link className="text-blue-600 hover:underline" href="#" aria-disabled>
             Twitter/X
           </Link>
         </li>
         <li>
-          <Link className="link" href="#" aria-disabled>
+          <Link className="text-blue-600 hover:underline" href="#" aria-disabled>
             Instagram
           </Link>
         </li>
         <li>
-          <Link className="link" href="#" aria-disabled>
+          <Link className="text-blue-600 hover:underline" href="#" aria-disabled>
             GitHub
           </Link>
         </li>
         <li>
-          <Link className="link" href="#" aria-disabled>
+          <Link className="text-blue-600 hover:underline" href="#" aria-disabled>
             YouTube
           </Link>
         </li>
       </ul>
-      <p style={{ color: 'var(--muted)' }}>
+      <p className="muted mt-2">
         Replace the links above with your actual profiles.
       </p>
     </section>
   );
 }
-

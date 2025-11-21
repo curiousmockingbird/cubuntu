@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import styles from './AudioPlayer.module.css';
 import { notifyPlay, registerPlayer } from '../lib/audioManager';
 
 type Props = {
@@ -144,20 +143,20 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
   const bufferedPct = duration ? Math.min(100, buffered * 100) : 0;
 
   return (
-    <div className={styles.audioPlayer} role="group" aria-label="Audio player">
+    <div className="rounded-lg border border-slate-200 bg-white p-3" role="group" aria-label="Audio player">
       <audio ref={audioRef} src={src} preload={preload} />
 
-      <div className={`${styles.apRow} ${styles.apControls}`}>
-        <button className={styles.apBtn} onClick={() => back(15)} aria-label="Back 15 seconds">⏪ 15s</button>
-        <button className={`${styles.apBtn} ${styles.apPrimary}`} onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
+      <div className="mb-2 flex items-center gap-3">
+        <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={() => back(15)} aria-label="Back 15 seconds">⏪ 15s</button>
+        <button className="rounded-md border border-blue-600 bg-blue-600 px-3 py-1.5 text-white hover:brightness-95" onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
           {isPlaying ? '⏸️ Pause' : '▶️ Play'}
         </button>
-        <button className={styles.apBtn} onClick={() => forward(30)} aria-label="Forward 30 seconds">30s ⏩</button>
-        <button className={styles.apBtn} onClick={cycleRate} aria-label="Change speed">{rate.toFixed(2)}x</button>
-        <div className={styles.apSpacer} />
-        <button className={styles.apBtn} onClick={toggleMute} aria-label={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button>
+        <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={() => forward(30)} aria-label="Forward 30 seconds">30s ⏩</button>
+        <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={cycleRate} aria-label="Change speed">{rate.toFixed(2)}x</button>
+        <div className="flex-1" />
+        <button className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 hover:bg-slate-100" onClick={toggleMute} aria-label={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button>
         <input
-          className={styles.apVolume}
+          className="w-[110px]"
           type="range"
           min={0}
           max={1}
@@ -168,15 +167,12 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
         />
       </div>
 
-      <div className={`${styles.apRow} ${styles.apSeek}`}>
-        <div className={styles.apTime} aria-label="Elapsed time">{fmt(time)}</div>
-        <div className={styles.apSeekWrap}>
-          <div
-            className={styles.apBuffer}
-            style={{ width: `${bufferedPct}%` }}
-            aria-hidden
-          />
+      <div className="flex items-center gap-2">
+        <div className="w-14 text-center text-slate-500 tabular-nums" aria-label="Elapsed time">{fmt(time)}</div>
+        <div className="relative flex h-6 flex-1 items-center">
+          <div className="pointer-events-none absolute left-0 top-1/2 h-1 w-0 -translate-y-1/2 rounded bg-slate-200" style={{ width: `${bufferedPct}%` }} aria-hidden />
           <input
+            className="w-full"
             type="range"
             min={0}
             max={Math.max(1, duration)}
@@ -188,7 +184,7 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
             aria-label="Seek"
           />
         </div>
-        <div className={styles.apTime} aria-label="Total time">{fmt(duration)}</div>
+        <div className="w-14 text-center text-slate-500 tabular-nums" aria-label="Total time">{fmt(duration)}</div>
       </div>
     </div>
   );

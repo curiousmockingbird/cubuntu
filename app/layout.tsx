@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <div className="container">
+        <div className="mx-auto max-w-3xl px-4 pb-12 pt-6">
           <SiteHeader />
           <main>{children}</main>
           <SiteFooter />

@@ -1,8 +1,9 @@
-Podcast MVP (Next.js + TypeScript)
+Podcast MVP (Next.js + TypeScript + Tailwind)
 
 Overview
 - Minimal podcast website built with Next.js App Router in TypeScript.
 - Lists episodes and plays audio directly in the browser using HTML5 `<audio>`.
+ - Styled with Tailwind CSS utilities.
 
 Features
 - Episodes list page with title, date, duration, description.
@@ -19,18 +20,20 @@ Getting Started
 
 Project Structure
 - `app/` — App Router pages (TypeScript)
-  - `layout.tsx` — global layout and styles import
-  - `page.tsx` — episodes list
-  - `episodes/[slug]/page.tsx` — episode detail
-- `components/AudioPlayer.tsx` — simple HTML5 audio wrapper
+  - `layout.tsx` — layout + Tailwind container
+  - `page.tsx` — episodes list (Tailwind two-column cards)
+  - `episodes/[slug]/page.tsx` — episode detail (Tailwind two-column)
+- `components/AudioPlayer.tsx` — modern player UI (Tailwind)
 - `data/episodes/` — one file per episode as `.json`
 - `app/api/rss/route.ts` — RSS feed (TypeScript)
-- `app/globals.css` — light styles for layout and cards
+- `app/globals.css` — Tailwind layers (@tailwind base/components/utilities)
+- `tailwind.config.ts`, `postcss.config.js` — Tailwind setup
 
 Notes
 - Sample MP3s are hosted remotely (SoundHelix) and stream in the browser.
 - Replace `data/episodes.js` with your own content or wire up a CMS/API.
 - If you prefer a richer player UI, consider `react-h5-audio-player`.
+ - After adding Tailwind, restart dev server if already running.
 
 Episodes data (JSON)
 - Each episode lives in `data/episodes/*.json` and is loaded server-side via `lib/episodes.ts`.

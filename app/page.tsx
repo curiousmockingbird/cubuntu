@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import AudioPlayer from '../components/AudioPlayer';
 import { getAllEpisodes } from '../lib/episodes';
-import styles from './page.module.css';
 
 export const revalidate = 3600;
 
@@ -15,34 +14,34 @@ export default async function HomePage() {
   const episodes = await getAllEpisodes();
   return (
     <section>
-      <h2>Latest Episodes</h2>
-      <div className="episode-list">
+      <h2 className="mb-4 text-xl font-semibold">Latest Episodes</h2>
+      <div className="grid gap-4">
         {episodes.map((ep) => (
-          <article key={ep.slug} className={styles.card}>
-            <div className={styles.imageWrap}>
+          <article key={ep.slug} className="grid grid-cols-[160px_1fr] gap-4 rounded-xl border border-slate-200 p-4 sm:grid-cols-1">
+            <div className="w-full overflow-hidden rounded-lg bg-slate-100">
               <Link href={`/episodes/${ep.slug}`}>
                 <Image
                   src={ep.image || '/images/placeholder.svg'}
                   alt={ep.title}
                   width={800}
                   height={800}
-                  style={{ width: '100%', height: 'auto' }}
+                  className="h-auto w-full"
                 />
               </Link>
             </div>
-            <div className={styles.content}>
-              <h3>
-                <Link className="link" href={`/episodes/${ep.slug}`}>
+            <div className="flex flex-col gap-2">
+              <h3 className="text-lg font-medium">
+                <Link className="text-blue-600 hover:underline" href={`/episodes/${ep.slug}`}>
                   {ep.title}
                 </Link>
               </h3>
-              <p className="episode-meta">
+              <p className="muted">
                 {new Date(ep.date).toLocaleDateString()} • {ep.duration}
               </p>
               <p>{ep.description}</p>
-              <div className="episode-actions">
+              <div className="mt-1 flex items-center gap-3">
                 <AudioPlayer src={ep.audioUrl} />
-                <Link className="link" href={`/episodes/${ep.slug}`}>
+                <Link className="text-blue-600 hover:underline" href={`/episodes/${ep.slug}`}>
                   Show notes →
                 </Link>
               </div>
