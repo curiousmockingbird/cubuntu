@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import styles from './AudioPlayer.module.css';
 
 type Props = {
   src: string | null | undefined;
@@ -135,20 +136,20 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
   const bufferedPct = duration ? Math.min(100, buffered * 100) : 0;
 
   return (
-    <div className="audio-player" role="group" aria-label="Audio player">
+    <div className={styles.audioPlayer} role="group" aria-label="Audio player">
       <audio ref={audioRef} src={src} preload={preload} />
 
-      <div className="ap-row ap-controls">
-        <button className="ap-btn" onClick={() => back(15)} aria-label="Back 15 seconds">⏪ 15s</button>
-        <button className="ap-btn ap-primary" onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
+      <div className={`${styles.apRow} ${styles.apControls}`}>
+        <button className={styles.apBtn} onClick={() => back(15)} aria-label="Back 15 seconds">⏪ 15s</button>
+        <button className={`${styles.apBtn} ${styles.apPrimary}`} onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
           {isPlaying ? '⏸️ Pause' : '▶️ Play'}
         </button>
-        <button className="ap-btn" onClick={() => forward(30)} aria-label="Forward 30 seconds">30s ⏩</button>
-        <button className="ap-btn" onClick={cycleRate} aria-label="Change speed">{rate.toFixed(2)}x</button>
-        <div className="ap-spacer" />
-        <button className="ap-btn" onClick={toggleMute} aria-label={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button>
+        <button className={styles.apBtn} onClick={() => forward(30)} aria-label="Forward 30 seconds">30s ⏩</button>
+        <button className={styles.apBtn} onClick={cycleRate} aria-label="Change speed">{rate.toFixed(2)}x</button>
+        <div className={styles.apSpacer} />
+        <button className={styles.apBtn} onClick={toggleMute} aria-label={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button>
         <input
-          className="ap-volume"
+          className={styles.apVolume}
           type="range"
           min={0}
           max={1}
@@ -159,11 +160,11 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
         />
       </div>
 
-      <div className="ap-row ap-seek">
-        <div className="ap-time" aria-label="Elapsed time">{fmt(time)}</div>
-        <div className="ap-seek-wrap">
+      <div className={`${styles.apRow} ${styles.apSeek}`}>
+        <div className={styles.apTime} aria-label="Elapsed time">{fmt(time)}</div>
+        <div className={styles.apSeekWrap}>
           <div
-            className="ap-buffer"
+            className={styles.apBuffer}
             style={{ width: `${bufferedPct}%` }}
             aria-hidden
           />
@@ -179,7 +180,7 @@ export default function AudioPlayer({ src, preload = 'metadata', initialRate = 1
             aria-label="Seek"
           />
         </div>
-        <div className="ap-time" aria-label="Total time">{fmt(duration)}</div>
+        <div className={styles.apTime} aria-label="Total time">{fmt(duration)}</div>
       </div>
     </div>
   );

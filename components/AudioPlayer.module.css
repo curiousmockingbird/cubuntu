@@ -1,0 +1,47 @@
+.audioPlayer {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+}
+
+/* compact variant removed */
+
+.apRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.apControls { margin-bottom: 8px; }
+
+.apBtn {
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: var(--fg);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.apBtn:hover { background: #eef2f7; }
+.apPrimary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.apPrimary:hover { filter: brightness(0.95); }
+
+.apSpacer { flex: 1; }
+
+.apVolume { width: 110px; }
+
+.apSeek { gap: 10px; }
+.apTime { width: 56px; text-align: center; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.apSeekWrap { position: relative; flex: 1; height: 22px; display: flex; align-items: center; }
+.apSeekWrap input[type="range"] { width: 100%; appearance: none; background: transparent; height: 4px; }
+.apSeekWrap input[type="range"]::-webkit-slider-runnable-track { height: 4px; background: #cbd5e1; border-radius: 2px; }
+.apSeekWrap input[type="range"]::-moz-range-track { height: 4px; background: #cbd5e1; border-radius: 2px; }
+.apSeekWrap input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; margin-top: -5px; cursor: pointer; }
+.apSeekWrap input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; background: var(--accent); border-radius: 50%; border: none; cursor: pointer; }
+
+.apBuffer { position: absolute; left: 0; top: 50%; height: 4px; transform: translateY(-50%); background: #e2e8f0; border-radius: 2px; pointer-events: none; width: 0; }
+
+/* hidden audio class removed */
