@@ -21,6 +21,14 @@ function esc(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
+function absoluteUrl(site: string, url: string): string {
+  try {
+    return new URL(url, site).toString();
+  } catch {
+    return url;
+  }
+}
+
 function buildRss({ site, episodes }: { site: string; episodes: Awaited<ReturnType<typeof getAllEpisodes>> }) {
   const items = episodes
     .map(
@@ -31,7 +39,7 @@ function buildRss({ site, episodes }: { site: string; episodes: Awaited<ReturnTy
         <guid>${site}/episodes/${e.slug}</guid>
         <description>${esc(e.description)}</description>
         <pubDate>${new Date(e.date).toUTCString()}</pubDate>
-        <enclosure url="${esc(e.audioUrl)}" type="audio/mpeg" />
+        <enclosure url="${esc(absoluteUrl(site, e.audioUrl))}" type="audio/mpeg" />
       </item>
     `,
     )
