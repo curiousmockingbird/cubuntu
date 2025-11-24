@@ -46,3 +46,5 @@ Thumbs.db
 # Misc
 .node_repl_history
 
+
+/generated/prisma
