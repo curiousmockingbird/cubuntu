@@ -25,6 +25,12 @@ export default function AudioPlayer({
   const [muted, setMuted] = useState(false);
   const [rate, setRate] = useState(initialRate);
 
+  const resolvedSrc = useMemo(() => {
+    if (!src) return undefined;
+    if (/^https?:\/\//i.test(src) || src.startsWith('/')) return src;
+    return `/${src}`;
+  }, [src]);
+
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
@@ -84,7 +90,7 @@ export default function AudioPlayer({
       a.removeEventListener("ended", onEnded);
       unregister();
     };
-  }, [src]);
+  }, [resolvedSrc]);
 
   const togglePlay = () => {
     const a = audioRef.current;
@@ -151,7 +157,7 @@ export default function AudioPlayer({
 
   if (!src) return null;
 
-  const playedPct = duration ? Math.min(100, (time / duration) * 100) : 0;
+  // Removed unused playedPct variable
   const bufferedPct = duration ? Math.min(100, buffered * 100) : 0;
 
   return (
@@ -162,7 +168,7 @@ export default function AudioPlayer({
       role="group"
       aria-label="Audio player"
     >
-      <audio ref={audioRef} src={src} preload={preload} />
+      <audio ref={audioRef} src={resolvedSrc} preload={preload} />
       {compact ? (
         <div className="flex items-center gap-2">
           <button
