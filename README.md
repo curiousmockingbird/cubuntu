@@ -9,6 +9,7 @@ Features
 - Episodes list page with title, date, duration, description.
 - Episode detail pages with show notes.
 - In-browser audio playback (no extra player library required).
+ - Authentication with Auth.js (NextAuth) + Prisma (email/password via Credentials provider).
 
 Getting Started
 1) Install dependencies:
@@ -49,3 +50,14 @@ Git LFS (for audio)
   - `git lfs migrate import --include="*.mp3,*.m4a,*.aac,*.flac,*.wav,*.ogg,*.oga,*.opus,*.aiff,*.aif"`
   - Force-push the branch to remote if needed (be careful on shared repos).
 - Verify tracking: `git lfs ls-files`
+
+Authentication (Auth.js + Prisma)
+- Env vars: set `AUTH_SECRET` and `DATABASE_URL` in `.env` (see `.env.example`).
+- Run migrations and generate client:
+  - `npx prisma migrate dev` (local) or `npx prisma migrate deploy` (CI)
+  - `npx prisma generate`
+- Routes added:
+  - `GET/POST /api/auth/[...nextauth]` — NextAuth handlers
+  - Pages: `/login` and `/register`
+- Models used in `prisma/schema.prisma`: `User`, `Account`, `Session`, `VerificationToken`, `Comment`.
+- The app uses the Prisma Adapter and a Credentials provider (email+password). Passwords are hashed with bcrypt.
