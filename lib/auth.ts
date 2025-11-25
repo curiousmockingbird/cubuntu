@@ -6,8 +6,9 @@ import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
-  session: { strategy: 'database' },
-  secret: process.env.AUTH_SECRET,
+  // Credentials sign-in requires JWT sessions in NextAuth v4
+  session: { strategy: 'jwt' },
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   providers: [
     Credentials({
       name: 'Credentials',
@@ -30,6 +31,23 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        // Persist id on the token for session mapping
+        // @ts-ignore - token is a generic map
+        token.id = (user as any).id
+      }
+      return token
+    },
+    async session({ session, token }) {
+      // @ts-ignore - we augment session in next-auth.d.ts
+      session.user = session.user || ({} as any)
+      // @ts-ignore
+      session.user.id = (token as any).id || token.sub || ''
+      return session
+    },
+  },
   pages: {
     signIn: '/login',
   },
@@ -37,4 +55,3 @@ export const authOptions: NextAuthOptions = {
 
 // For App Router route handlers
 export const auth = () => NextAuth(authOptions)
-
