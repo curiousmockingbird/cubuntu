@@ -106,7 +106,7 @@ export default function Comments({ slug }: { slug: string }) {
 
   return (
     <section className="mt-8">
-      <h3 className="text-lg font-semibold">Comentarios</h3>
+      <h3 className="text-lg font-semibold">Comentarios ({items.length})</h3>
       {isLoading ? (
         <p className="text-slate-600">Cargando…</p>
       ) : items.length === 0 ? (
