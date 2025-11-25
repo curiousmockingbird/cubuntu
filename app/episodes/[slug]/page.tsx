@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
 import AudioPlayer from "../../../components/AudioPlayer";
+import Comments from "../../../components/Comments";
 import { getEpisodeBySlug, getEpisodeSlugs } from "../../../lib/episodes";
 
 type Params = { params: { slug: string } };
@@ -56,6 +57,7 @@ export default async function EpisodePage({ params }: Params) {
             episode.showNotes.map((p, i) => <p key={i}>{p}</p>)}
         </section>
       </div>
+      <Comments slug={params.slug} />
     </article>
   );
 }
