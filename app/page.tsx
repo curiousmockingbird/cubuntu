@@ -59,7 +59,7 @@ export default async function HomePage() {
                   className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-3 py-1.5 text-blue-700 hover:bg-slate-50"
                   href={`/episodes/${ep.slug}`}
                 >
-                  Show notes
+                  Detalles
                   <span aria-hidden>→</span>
                 </Link>
               </div>

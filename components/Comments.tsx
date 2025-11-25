@@ -81,11 +81,11 @@ export default function Comments({ slug }: { slug: string }) {
               rows={3}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write a comment…"
+              placeholder="Déjanos tu comentario…"
             />
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white" type="submit">
-              Déjanos tu comentario
+              Publicar
             </button>
           </form>
         ) : (

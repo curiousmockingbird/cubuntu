@@ -12,6 +12,7 @@ export default async function EpisodePage({ params }: Params) {
   if (!episode) return notFound();
 
   return (
+    <>
     <article className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
       {/* Row 1: image (left) and audio player (right) */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
@@ -57,8 +58,9 @@ export default async function EpisodePage({ params }: Params) {
             episode.showNotes.map((p, i) => <p key={i}>{p}</p>)}
         </section>
       </div>
-      <Comments slug={params.slug} />
     </article>
+      <Comments slug={params.slug} />
+      </>
   );
 }
 
