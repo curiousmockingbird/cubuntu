@@ -54,11 +54,11 @@ export default function Comments({ slug }: { slug: string }) {
 
   return (
     <section className="mt-8">
-      <h3 className="text-lg font-semibold">Comments</h3>
+      <h3 className="text-lg font-semibold">Comentarios</h3>
       {loading ? (
-        <p className="text-slate-600">Loading…</p>
+        <p className="text-slate-600">Cargando…</p>
       ) : items.length === 0 ? (
-        <p className="text-slate-600">No comments yet.</p>
+        <p className="text-slate-600">Sin comentarios aún.</p>
       ) : (
         <ul className="mt-3 space-y-3">
           {items.map((c) => (
@@ -85,12 +85,12 @@ export default function Comments({ slug }: { slug: string }) {
             />
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white" type="submit">
-              Post comment
+              Déjanos tu comentario
             </button>
           </form>
         ) : (
           <p className="text-slate-600 text-sm">
-            <a href="/login" className="text-blue-600 hover:underline">Sign in</a> to write a comment.
+            <a href="/login" className="text-blue-600 hover:underline">Inicia sesión</a> para dejar comentario.
           </p>
         )}
       </div>

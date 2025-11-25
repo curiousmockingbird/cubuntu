@@ -50,3 +50,6 @@ Thumbs.db
 /generated/prisma
 .vercel
 .env*.local
+
+# Scripts
+scripts/
