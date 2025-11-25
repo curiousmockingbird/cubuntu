@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../lib/auth'
 import prisma from '../../../lib/prisma'
+import { getPusherServer } from '../../../lib/pusher'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -34,6 +35,14 @@ export async function POST(req: NextRequest) {
     },
     include: { user: { select: { id: true, name: true, email: true } } },
   })
+
+  // Fire realtime event for clients subscribed to this episode's comments
+  try {
+    const pusher = getPusherServer()
+    await pusher.trigger(`comments-${body.slug}`, 'new-comment', created)
+  } catch (err) {
+    // Best-effort: don't fail the request if push fails
+    console.error('Pusher trigger failed', err)
+  }
   return NextResponse.json({ comment: created }, { status: 201 })
 }
-

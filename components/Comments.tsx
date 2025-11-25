@@ -1,7 +1,10 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useEffect } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import Pusher from 'pusher-js'
 
 type Comment = {
   id: string
@@ -12,50 +15,99 @@ type Comment = {
 
 export default function Comments({ slug }: { slug: string }) {
   const { data: session } = useSession()
-  const [items, setItems] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
+  const qc = useQueryClient()
   const [content, setContent] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const load = async () => {
-    setLoading(true)
-    const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, { cache: 'no-store', credentials: 'same-origin' })
-    if (res.ok) {
+  const { data: items = [], isLoading, isFetching } = useQuery({
+    queryKey: ['comments', slug],
+    queryFn: async () => {
+      const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, { cache: 'no-store' })
+      if (!res.ok) throw new Error('Failed to load comments')
       const data = (await res.json()) as { comments: Comment[] }
-      setItems(data.comments)
-    }
-    setLoading(false)
-  }
+      return data.comments
+    },
+  })
 
+  // Live updates via Pusher
   useEffect(() => {
-    load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug])
+    const key = process.env.NEXT_PUBLIC_PUSHER_KEY
+    const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER
+    if (!key || !cluster) return
 
-  const submit = async (e: React.FormEvent) => {
+    const pusher = new Pusher(key, { cluster })
+    const channelName = `comments-${slug}`
+    const channel = pusher.subscribe(channelName)
+
+    const handler = (c: Comment) => {
+      qc.setQueryData<Comment[]>(['comments', slug], (old = []) => {
+        if (old.some((x) => x.id === c.id)) return old
+        return [c, ...old]
+      })
+    }
+
+    channel.bind('new-comment', handler)
+
+    return () => {
+      channel.unbind('new-comment', handler)
+      pusher.unsubscribe(channelName)
+      pusher.disconnect()
+    }
+  }, [slug, qc])
+
+  const addComment = useMutation({
+    mutationFn: async (payload: { slug: string; content: string }) => {
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const j = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error((j as any).error || 'Failed to post comment')
+      return j.comment as Comment
+    },
+    onMutate: async (newComment) => {
+      setError(null)
+      // Cancel outgoing refetches (so they don't overwrite our optimistic update)
+      await qc.cancelQueries({ queryKey: ['comments', slug] })
+      const prev = qc.getQueryData<Comment[]>(['comments', slug])
+      const temp: Comment = {
+        id: `temp-${Date.now()}`,
+        content: newComment.content,
+        createdAt: new Date().toISOString(),
+        user: { id: session?.user?.id || 'me', name: session?.user?.name || null, email: session?.user?.email || null },
+      }
+      qc.setQueryData<Comment[]>(['comments', slug], (old = []) => [temp, ...old])
+      return { prev }
+    },
+    onError: (err, _vars, ctx) => {
+      setError((err as Error).message)
+      qc.setQueryData(['comments', slug], ctx?.prev)
+    },
+    onSuccess: (saved) => {
+      // Replace temp with saved or just prepend saved and filter temps
+      qc.setQueryData<Comment[]>(['comments', slug], (old = []) => {
+        const withoutTemps = old.filter((c) => !c.id.startsWith('temp-'))
+        return [saved, ...withoutTemps]
+      })
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ['comments', slug] })
+    },
+  })
+
+  const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
     const text = content.trim()
     if (!text) return
-    const res = await fetch('/api/comments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug, content: text }),
-      credentials: 'same-origin',
-    })
-    if (!res.ok) {
-      const j = await res.json().catch(() => ({}))
-      setError(j.error || 'Failed to post comment')
-      return
-    }
+    addComment.mutate({ slug, content: text })
     setContent('')
-    load()
   }
 
   return (
     <section className="mt-8">
       <h3 className="text-lg font-semibold">Comentarios</h3>
-      {loading ? (
+      {isLoading ? (
         <p className="text-slate-600">Cargando…</p>
       ) : items.length === 0 ? (
         <p className="text-slate-600">Sin comentarios aún.</p>
@@ -71,6 +123,9 @@ export default function Comments({ slug }: { slug: string }) {
             </li>
           ))}
         </ul>
+      )}
+      {isFetching && !isLoading && (
+        <p className="mt-2 text-xs text-slate-500">Actualizando…</p>
       )}
 
       <div className="mt-4">
