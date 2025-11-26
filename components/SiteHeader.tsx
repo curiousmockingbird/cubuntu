@@ -20,7 +20,20 @@ export default async function SiteHeader() {
         <Link className="text-blue-600 hover:underline" href="/donate">Donate</Link>
         <span className="flex-1" />
         {user ? (
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-3 text-sm">
+            {/* User avatar (image or initial) */}
+            {user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={user.image}
+                alt={(user.name || user.email || 'User') as string}
+                className="h-8 w-8 rounded-full object-cover border"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium">
+                {((user.name || user.email || 'U') as string).charAt(0).toUpperCase()}
+              </div>
+            )}
             <span className="text-slate-600">Hi, {user.name || user.email}</span>
             <SignOutButton />
           </div>
