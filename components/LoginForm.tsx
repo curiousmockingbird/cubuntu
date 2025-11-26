@@ -24,18 +24,33 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3 max-w-sm">
-      <div>
-        <label className="block text-sm mb-1" htmlFor="email">Email</label>
-        <input id="email" className="w-full rounded border px-3 py-2" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <div className="space-y-4 max-w-sm">
+      <form onSubmit={onSubmit} className="space-y-3">
+        <div>
+          <label className="block text-sm mb-1" htmlFor="email">Email</label>
+          <input id="email" className="w-full rounded border px-3 py-2" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div>
+          <label className="block text-sm mb-1" htmlFor="password">Password</label>
+          <input id="password" className="w-full rounded border px-3 py-2" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <button className="w-full rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white" type="submit">Sign in</button>
+      </form>
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-gray-200" />
+        <span className="text-xs text-gray-500">OR</span>
+        <div className="h-px flex-1 bg-gray-200" />
       </div>
-      <div>
-        <label className="block text-sm mb-1" htmlFor="password">Password</label>
-        <input id="password" className="w-full rounded border px-3 py-2" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-      </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <button className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white" type="submit">Sign in</button>
-    </form>
+
+      <button
+        type="button"
+        onClick={() => signIn('google', { callbackUrl: '/' })}
+        className="w-full rounded-md border px-4 py-2 bg-white hover:bg-gray-50"
+      >
+        Continue with Google
+      </button>
+    </div>
   )
 }
-

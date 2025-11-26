@@ -52,7 +52,7 @@ Git LFS (for audio)
 - Verify tracking: `git lfs ls-files`
 
 Authentication (Auth.js + Prisma)
-- Env vars: set `AUTH_SECRET` and `DATABASE_URL` in `.env` (see `.env.example`).
+- Env vars: set `AUTH_SECRET` and `DATABASE_URL` in `.env` (see `.env.example`). To enable Google sign-in, also set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (create credentials at https://console.cloud.google.com/apis/credentials; type: OAuth client ID with authorized redirect `http://localhost:3000/api/auth/callback/google`).
 - Run migrations and generate client:
   - `npx prisma migrate dev` (local) or `npx prisma migrate deploy` (CI)
   - `npx prisma generate`
