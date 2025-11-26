@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const comments = await prisma.comment.findMany({
     where: { episodeSlug: slug },
     orderBy: { createdAt: 'desc' },
-    include: { user: { select: { id: true, name: true, email: true } } },
+    include: { user: { select: { id: true, name: true, email: true, image: true } } },
   })
   return NextResponse.json({ comments })
 }
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       userId: session.user.id,
       content,
     },
-    include: { user: { select: { id: true, name: true, email: true } } },
+    include: { user: { select: { id: true, name: true, email: true, image: true } } },
   })
 
   // Fire realtime event for clients subscribed to this episode's comments

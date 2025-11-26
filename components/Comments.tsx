@@ -10,7 +10,7 @@ type Comment = {
   id: string
   content: string
   createdAt: string
-  user: { id: string; name?: string | null; email?: string | null }
+  user: { id: string; name?: string | null; email?: string | null; image?: string | null }
 }
 
 export default function Comments({ slug }: { slug: string }) {
@@ -75,7 +75,7 @@ export default function Comments({ slug }: { slug: string }) {
         id: `temp-${Date.now()}`,
         content: newComment.content,
         createdAt: new Date().toISOString(),
-        user: { id: session?.user?.id || 'me', name: session?.user?.name || null, email: session?.user?.email || null },
+        user: { id: session?.user?.id || 'me', name: session?.user?.name || null, email: session?.user?.email || null, image: (session as any)?.user?.image || null },
       }
       qc.setQueryData<Comment[]>(['comments', slug], (old = []) => [temp, ...old])
       return { prev }
@@ -113,15 +113,31 @@ export default function Comments({ slug }: { slug: string }) {
         <p className="text-slate-600">Sin comentarios aún.</p>
       ) : (
         <ul className="mt-3 space-y-3">
-          {items.map((c) => (
-            <li key={c.id} className="rounded border border-slate-200 bg-white p-3">
-              <div className="text-sm text-slate-600">
-                <strong>{c.user.name || c.user.email || 'User'}</strong>
-                <span className="ml-2">{new Date(c.createdAt).toLocaleString()}</span>
-              </div>
-              <p className="mt-1 whitespace-pre-wrap">{c.content}</p>
-            </li>
-          ))}
+          {items.map((c) => {
+            const displayName = c.user.name || c.user.email || 'User'
+            const initial = (displayName || 'U').charAt(0).toUpperCase()
+            return (
+              <li key={c.id} className="rounded border border-slate-200 bg-white p-3">
+                <div className="flex items-start gap-3">
+                  {c.user.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={c.user.image} alt={displayName} className="h-8 w-8 rounded-full object-cover border" />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium">
+                      {initial}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <div className="text-sm text-slate-600">
+                      <strong>{displayName}</strong>
+                      <span className="ml-2">{new Date(c.createdAt).toLocaleString()}</span>
+                    </div>
+                    <p className="mt-1 whitespace-pre-wrap">{c.content}</p>
+                  </div>
+                </div>
+              </li>
+            )
+          })}
         </ul>
       )}
       {isFetching && !isLoading && (
