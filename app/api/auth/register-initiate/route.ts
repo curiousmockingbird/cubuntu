@@ -33,17 +33,19 @@ export async function POST(req: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12)
 
-    // Cleanup any previous pending signups for this email
-    await prisma.verificationToken.deleteMany({ where: { identifier: { startsWith: PREFIX } } }).catch(() => {})
+    // Cleanup any previous pending signups for this email only
+    await prisma.verificationToken
+      .deleteMany({ where: { identifier: { startsWith: `${PREFIX}${email}:` } } })
+      .catch(() => {})
 
     const tokenRaw = crypto.randomBytes(32).toString('hex')
-    const tokenHash = crypto.createHash('sha256').update(tokenRaw).digest('hex')
     const expires = new Date(Date.now() + 1000 * 60 * 60 * 24) // 24 hours
 
     const payload = { name, username: username || null, email, passwordHash }
-    const identifier = PREFIX + Buffer.from(JSON.stringify(payload)).toString('base64')
+    const identifier = `${PREFIX}${email}:${Buffer.from(JSON.stringify(payload)).toString('base64')}`
 
-    await prisma.verificationToken.create({ data: { identifier, token: tokenHash, expires } })
+    // Store token in plain form for signup flow (time-limited, email-bound)
+    await prisma.verificationToken.create({ data: { identifier, token: tokenRaw, expires } })
 
     const origin = new URL(req.url).origin
     const verifyUrl = `${origin}/verify?token=${encodeURIComponent(tokenRaw)}`
@@ -54,4 +56,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
-

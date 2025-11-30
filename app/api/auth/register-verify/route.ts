@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import crypto from 'crypto'
-
 const PREFIX = 'signup:'
 
 export async function POST(req: Request) {
@@ -10,8 +8,8 @@ export async function POST(req: Request) {
     const token = String(tokenRaw || '')
     if (!token) return NextResponse.json({ error: 'Missing token' }, { status: 400 })
 
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-    const vt = await prisma.verificationToken.findFirst({ where: { token: tokenHash } })
+    // Find by raw token for signup flow
+    const vt = await prisma.verificationToken.findFirst({ where: { token } })
     if (!vt) return NextResponse.json({ error: 'Invalid or expired token' }, { status: 400 })
 
     if (vt.expires < new Date()) {
@@ -24,19 +22,26 @@ export async function POST(req: Request) {
     }
 
     // Parse payload
-    const encoded = vt.identifier.slice(PREFIX.length)
+    const after = vt.identifier.slice(PREFIX.length)
+    const [emailPart, encoded] = after.split(':', 2)
     let payload: { name: string; username: string | null; email: string; passwordHash: string }
     try {
-      payload = JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'))
+      payload = JSON.parse(Buffer.from(encoded || '', 'base64').toString('utf8'))
     } catch {
       return NextResponse.json({ error: 'Invalid token payload' }, { status: 400 })
+    }
+
+    if (!emailPart || payload.email !== emailPart) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 400 })
     }
 
     // Re-check conflicts at verification time
     const existsEmail = await prisma.user.findUnique({ where: { email: payload.email } })
     if (existsEmail) {
+      // Idempotent behavior: if the account for this email already exists,
+      // treat verification as successful and consume the token.
       await prisma.verificationToken.delete({ where: { identifier_token: { identifier: vt.identifier, token: vt.token } } }).catch(() => {})
-      return NextResponse.json({ error: 'Email already in use' }, { status: 409 })
+      return NextResponse.json({ ok: true })
     }
     if (payload.username) {
       const existsUsername = await prisma.user.findUnique({ where: { username: payload.username } })
@@ -63,4 +68,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
-
