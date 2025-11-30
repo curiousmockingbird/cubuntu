@@ -114,4 +114,9 @@ createdAt DateTime @default(now())
 
 user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+// Nested replies
+parentId String?
+parent   Comment? @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+children Comment[] @relation("CommentToComment")
+
 }

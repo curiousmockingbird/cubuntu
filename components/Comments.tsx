@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -11,6 +11,145 @@ type Comment = {
   content: string
   createdAt: string
   user: { id: string; name?: string | null; email?: string | null; image?: string | null }
+  parentId?: string | null
+}
+
+type CommentNode = Comment & { children: CommentNode[] }
+
+// Maximum depth to render replies inline. Deeper levels are collapsed.
+const MAX_INLINE_DEPTH = 2
+
+const buildTree = (list: Comment[]): CommentNode[] => {
+  const byId = new Map<string, CommentNode>()
+  const roots: CommentNode[] = []
+  list
+    .slice()
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    .forEach((c) => {
+      byId.set(c.id, { ...c, children: [] })
+    })
+  byId.forEach((node) => {
+    if (node.parentId) {
+      const parent = byId.get(node.parentId)
+      if (parent) parent.children.push(node)
+      else roots.push(node)
+    } else {
+      roots.push(node)
+    }
+  })
+  return roots
+}
+
+type CommentItemProps = {
+  node: CommentNode
+  depth: number
+  canReply: boolean
+  isExpandedById: (id: string) => boolean
+  onToggleExpand: (id: string) => void
+  onToggleReply: (id: string) => void
+  isReplyOpen: (id: string) => boolean
+  getReplyValue: (id: string) => string
+  onReplyChange: (id: string, v: string) => void
+  onSubmitReply: (id: string) => void
+}
+
+function CommentItem({
+  node,
+  depth,
+  canReply,
+  isExpandedById,
+  onToggleExpand,
+  onToggleReply,
+  isReplyOpen,
+  getReplyValue,
+  onReplyChange,
+  onSubmitReply,
+}: CommentItemProps) {
+  const displayName = node.user.name || node.user.email || 'User'
+  const initial = (displayName || 'U').charAt(0).toUpperCase()
+  const indent = Math.min(depth, 6)
+  const showChildrenInline = depth < MAX_INLINE_DEPTH
+  const isExpanded = isExpandedById(node.id)
+  const hasHiddenChildren = !showChildrenInline && node.children.length > 0
+  const allowReplyHere = canReply && depth < MAX_INLINE_DEPTH
+
+  return (
+    <li className="rounded border border-slate-200 bg-white p-3">
+      <div className="flex items-start gap-3" style={{ marginLeft: indent * 16 }}>
+        {node.user.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={node.user.image} alt={displayName} className="h-8 w-8 rounded-full object-cover border" />
+        ) : (
+          <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium">
+            {initial}
+          </div>
+        )}
+        <div className="flex-1">
+          <div className="text-sm text-slate-600">
+            <strong>{displayName}</strong>
+            <span className="ml-2">{new Date(node.createdAt).toLocaleString()}</span>
+          </div>
+          <p className="mt-1 whitespace-pre-wrap">{node.content}</p>
+          <div className="mt-2 flex items-center gap-3 text-xs text-slate-600">
+            {allowReplyHere && (
+              <button type="button" onClick={() => onToggleReply(node.id)} className="hover:underline text-blue-600">
+                Responder
+              </button>
+            )}
+            {hasHiddenChildren && (
+              <button type="button" onClick={() => onToggleExpand(node.id)} className="hover:underline">
+                {isExpanded ? 'Ocultar respuestas' : `Mostrar ${node.children.length} respuestas`}
+              </button>
+            )}
+          </div>
+
+          {isReplyOpen(node.id) && allowReplyHere && (
+            <div className="mt-2">
+              <textarea
+                className="w-full rounded border px-3 py-2"
+                rows={2}
+                value={getReplyValue(node.id)}
+                onChange={(e) => onReplyChange(node.id, e.target.value)}
+                placeholder={`Responder a ${displayName}`}
+              />
+              <div className="mt-1 flex gap-2">
+                <button
+                  className="rounded-md border border-blue-600 bg-blue-600 px-3 py-1 text-white"
+                  type="button"
+                  onClick={() => onSubmitReply(node.id)}
+                >
+                  Publicar
+                </button>
+                <button className="text-slate-600" type="button" onClick={() => onToggleReply(node.id)}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {node.children.length > 0 && (showChildrenInline || isExpanded) && (
+            <ul className="mt-3 space-y-3">
+              {node.children.map((child) => (
+                <CommentItem
+                  key={child.id}
+                  node={child}
+                  depth={depth + 1}
+                  canReply={canReply}
+                  isExpandedById={isExpandedById}
+                  onToggleExpand={onToggleExpand}
+                  onToggleReply={onToggleReply}
+                  isReplyOpen={isReplyOpen}
+                  getReplyValue={getReplyValue}
+                  onReplyChange={onReplyChange}
+                  onSubmitReply={onSubmitReply}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </li>
+  )
 }
 
 export default function Comments({ slug }: { slug: string }) {
@@ -56,7 +195,7 @@ export default function Comments({ slug }: { slug: string }) {
   }, [slug, qc])
 
   const addComment = useMutation({
-    mutationFn: async (payload: { slug: string; content: string }) => {
+    mutationFn: async (payload: { slug: string; content: string; parentId?: string | null }) => {
       const res = await fetch('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,6 +215,7 @@ export default function Comments({ slug }: { slug: string }) {
         content: newComment.content,
         createdAt: new Date().toISOString(),
         user: { id: session?.user?.id || 'me', name: session?.user?.name || null, email: session?.user?.email || null, image: (session as any)?.user?.image || null },
+        parentId: newComment.parentId || null,
       }
       qc.setQueryData<Comment[]>(['comments', slug], (old = []) => [temp, ...old])
       return { prev }
@@ -104,45 +244,50 @@ export default function Comments({ slug }: { slug: string }) {
     setContent('')
   }
 
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  const [replyOpen, setReplyOpen] = useState<Record<string, boolean>>({})
+  const [replyText, setReplyText] = useState<Record<string, string>>({})
+
+  const toggleExpand = (id: string) => setExpanded((s) => ({ ...s, [id]: !s[id] }))
+  const openReply = (id: string) => setReplyOpen((s) => ({ ...s, [id]: !s[id] }))
+
+  const submitReply = (parentId: string) => {
+    const text = (replyText[parentId] || '').trim()
+    if (!text) return
+    addComment.mutate({ slug, content: text, parentId })
+    setReplyText((s) => ({ ...s, [parentId]: '' }))
+    setReplyOpen((s) => ({ ...s, [parentId]: false }))
+  }
+
+  const nodes = buildTree(items)
+
   return (
     <section className="mt-8">
       <h3 className="text-lg font-semibold">Comentarios ({items.length})</h3>
       {isLoading ? (
         <p className="text-slate-600">Cargando…</p>
-      ) : items.length === 0 ? (
+      ) : nodes.length === 0 ? (
         <p className="text-slate-600">Sin comentarios aún.</p>
       ) : (
         <ul className="mt-3 space-y-3">
-          {items.map((c) => {
-            const displayName = c.user.name || c.user.email || 'User'
-            const initial = (displayName || 'U').charAt(0).toUpperCase()
-            return (
-              <li key={c.id} className="rounded border border-slate-200 bg-white p-3">
-                <div className="flex items-start gap-3">
-                  {c.user.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={c.user.image} alt={displayName} className="h-8 w-8 rounded-full object-cover border" />
-                  ) : (
-                    <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium">
-                      {initial}
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="text-sm text-slate-600">
-                      <strong>{displayName}</strong>
-                      <span className="ml-2">{new Date(c.createdAt).toLocaleString()}</span>
-                    </div>
-                    <p className="mt-1 whitespace-pre-wrap">{c.content}</p>
-                  </div>
-                </div>
-              </li>
-            )
-          })}
+          {nodes.map((n) => (
+            <CommentItem
+              key={n.id}
+              node={n}
+              depth={0}
+              canReply={!!session}
+              isExpandedById={(id) => !!expanded[id]}
+              onToggleExpand={toggleExpand}
+              onToggleReply={openReply}
+              isReplyOpen={(id) => !!replyOpen[id]}
+              getReplyValue={(id) => replyText[id] || ''}
+              onReplyChange={(id, v) => setReplyText((s) => ({ ...s, [id]: v }))}
+              onSubmitReply={submitReply}
+            />
+          ))}
         </ul>
       )}
-      {isFetching && !isLoading && (
-        <p className="mt-2 text-xs text-slate-500">Actualizando…</p>
-      )}
+      {isFetching && !isLoading && <p className="mt-2 text-xs text-slate-500">Actualizando…</p>}
 
       <div className="mt-4">
         {session ? (
