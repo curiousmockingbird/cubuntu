@@ -40,7 +40,7 @@ export default async function SiteHeader() {
         ) : (
           <>
             <Link className="text-blue-600 hover:underline" href="/login">Sign in</Link>
-            <Link className="text-blue-600 hover:underline" href="/register">Register</Link>
+            {/* <Link className="text-blue-600 hover:underline" href="/register">Register</Link> */}
           </>
         )}
       </nav>
