@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import crypto from 'crypto'
+import { sendPasswordResetEmail } from '@/lib/mailer'
 
 const PREFIX = 'password_reset:'
 
@@ -28,9 +29,7 @@ export async function POST(req: Request) {
 
       const origin = new URL(req.url).origin
       const resetUrl = `${origin}/reset?token=${encodeURIComponent(tokenRaw)}`
-      console.log('Password reset URL:', resetUrl)
-      // Here you would send email containing resetUrl.
-      // e.g., await sendMail({ to: email, subject: 'Reset your password', text: `Reset: ${resetUrl}` })
+      await sendPasswordResetEmail(email, resetUrl)
     }
 
     return NextResponse.json({ ok: true })
