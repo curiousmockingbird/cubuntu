@@ -20,10 +20,6 @@ export default function ForgotPasswordPage() {
       const j = await res.json().catch(() => ({} as any))
       if (!res.ok) throw new Error((j as any).error || 'Could not send reset email')
       setSent('If an account exists for this email, a reset link has been sent.')
-      if (j.resetUrl) {
-        // For development convenience, show the link
-        setSent(`Reset link (dev): ${j.resetUrl}`)
-      }
     } catch (err) {
       setError((err as Error).message)
     } finally {
