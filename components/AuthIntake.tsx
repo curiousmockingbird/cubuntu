@@ -120,6 +120,9 @@ function PasswordStage({ email, onBack }: { email: string; onBack: () => void })
       <button type="submit" disabled={loading} className="w-full rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60">
         {loading ? 'Signing in…' : 'Sign in'}
       </button>
+      <div className="text-right">
+        <a href={`/forgot`} className="text-xs text-blue-600 hover:underline">Forgot password?</a>
+      </div>
     </form>
   )
 }
