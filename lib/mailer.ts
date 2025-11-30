@@ -39,3 +39,43 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   }
 }
 
+export async function sendSignUpVerificationEmail(to: string, verifyUrl: string) {
+  const apiKey = process.env.RESEND_API_KEY
+  const from = process.env.RESEND_FROM_EMAIL
+  if (!apiKey || !from) {
+    console.warn('Resend not configured: missing RESEND_API_KEY or RESEND_FROM_EMAIL')
+    return
+  }
+
+  const subject = 'Confirm your email to finish signing up'
+  const html = `
+    <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;">
+      <h2>Confirm your email</h2>
+      <p>Thanks for creating an account. Please confirm your email to finish setting up your profile.</p>
+      <p style=\"margin: 24px 0;\">
+        <a href=\"${verifyUrl}\" style=\"background: #2563eb; color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 6px; display: inline-block;\">Confirm email</a>
+      </p>
+      <p>If the button doesn't work, copy and paste this URL into your browser:</p>
+      <p style=\"word-break: break-all; color:#2563eb;\">${verifyUrl}</p>
+      <p>This link will expire in 24 hours.</p>
+    </div>
+  `
+  const text = `Confirm your email\n\n${verifyUrl}\n\nThis link will expire in 24 hours.`
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from, to, subject, html, text }),
+    })
+    if (!res.ok) {
+      const msg = await res.text().catch(() => '')
+      console.error('Resend email error', res.status, msg)
+    }
+  } catch (err) {
+    console.error('Resend email fetch failed', err)
+  }
+}

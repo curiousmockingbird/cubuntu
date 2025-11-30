@@ -149,14 +149,14 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
         const j = await r.json().catch(() => ({} as any))
         if (r.ok && j.exists) throw new Error('Username already taken')
       }
-      const res = await fetch('/api/register', {
+      const res = await fetch('/api/auth/register-initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: nm, username: un || undefined, email, password }),
       })
       const j = await res.json().catch(() => ({} as any))
-      if (!res.ok) throw new Error((j as any).error || 'Failed to create account')
-      await signIn('credentials', { email, password, callbackUrl: '/' })
+      if (!res.ok) throw new Error((j as any).error || 'Failed to start sign up')
+      setError('Check your email for a verification link to finish signing up.')
     } catch (err) {
       setError((err as Error).message)
     } finally {
@@ -188,9 +188,9 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
         <input id="password" type="password" required className="w-full rounded border px-3 py-2" value={password} onChange={(e) => setPassword(e.target.value)} />
         <p className="text-xs text-slate-500 mt-1">8+ characters recommended</p>
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-slate-700">{error}</p>}
       <button disabled={loading} className="w-full rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60" type="submit">
-        {loading ? 'Creating…' : 'Create account'}
+        {loading ? 'Sending…' : 'Create account'}
       </button>
     </form>
   )
