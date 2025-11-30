@@ -133,6 +133,7 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -156,12 +157,46 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
       })
       const j = await res.json().catch(() => ({} as any))
       if (!res.ok) throw new Error((j as any).error || 'Failed to start sign up')
-      setError('Check your email for a verification link to finish signing up.')
+      setSent(true)
     } catch (err) {
       setError((err as Error).message)
     } finally {
       setLoading(false)
     }
+  }
+
+  if (sent) {
+    return (
+      <div className="space-y-4 rounded-md border border-blue-200 bg-blue-50 p-4">
+        <div className="flex items-start gap-3">
+          <div className="h-9 w-9 flex items-center justify-center rounded-full bg-blue-600 text-white text-lg">✉️</div>
+          <div className="flex-1">
+            <h3 className="text-base font-semibold text-slate-900">Check your email to verify</h3>
+            <p className="mt-1 text-sm text-slate-700">
+              We sent a verification link to <br/>
+              <span className="ml-1 font-medium">{email}</span>.
+              Click the link to finish creating your account.
+            </p>
+            <ul className="mt-3 text-sm text-slate-700 list-disc pl-5 space-y-1">
+              <li>Open your inbox and look for our message.</li>
+              <li>Check spam or promotions if you don’t see it.</li>
+            </ul>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {/* <a href="https://mail.google.com/" target="_blank" className="rounded-md border px-3 py-2 bg-white hover:bg-gray-50 text-sm">Open Gmail</a>
+              <a href="https://outlook.live.com/" target="_blank" className="rounded-md border px-3 py-2 bg-white hover:bg-gray-50 text-sm">Open Outlook</a> */}
+              <button onClick={onBack} className=" text-sm text-blue-600 hover:underline">Use a different email</button>
+            </div>
+          </div>
+        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <div className="text-xs text-slate-500">Didn’t get it? It can take a minute. You can also try again.</div>
+        <div>
+          <button onClick={(e) => submit(e as any)} disabled={loading} className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60 text-sm">
+            {loading ? 'Resending…' : 'Resend verification email'}
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
