@@ -18,6 +18,8 @@ export default function Comments({ slug }: { slug: string }) {
   const qc = useQueryClient()
   const [content, setContent] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const sortComments = (arr: Comment[]) =>
+    arr.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const { data: items = [], isLoading, isFetching } = useQuery({
     queryKey: ['comments', slug],
@@ -27,6 +29,9 @@ export default function Comments({ slug }: { slug: string }) {
       const data = (await res.json()) as { comments: Comment[] }
       return data.comments
     },
+    select: (data) => sortComments(data),
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
   })
 
   // Live updates via Pusher
@@ -42,7 +47,7 @@ export default function Comments({ slug }: { slug: string }) {
     const handler = (c: Comment) => {
       qc.setQueryData<Comment[]>(['comments', slug], (old = []) => {
         if (old.some((x) => x.id === c.id)) return old
-        return [c, ...old]
+        return sortComments([c, ...old])
       })
     }
 
@@ -77,7 +82,7 @@ export default function Comments({ slug }: { slug: string }) {
         createdAt: new Date().toISOString(),
         user: { id: session?.user?.id || 'me', name: session?.user?.name || null, email: session?.user?.email || null, image: (session as any)?.user?.image || null },
       }
-      qc.setQueryData<Comment[]>(['comments', slug], (old = []) => [temp, ...old])
+      qc.setQueryData<Comment[]>(['comments', slug], (old = []) => sortComments([temp, ...old]))
       return { prev }
     },
     onError: (err, _vars, ctx) => {
@@ -88,12 +93,14 @@ export default function Comments({ slug }: { slug: string }) {
       // Replace temp with saved or just prepend saved and filter temps
       qc.setQueryData<Comment[]>(['comments', slug], (old = []) => {
         const withoutTemps = old.filter((c) => !c.id.startsWith('temp-'))
-        return [saved, ...withoutTemps]
+        // If the saved already exists (e.g., via Pusher), skip adding duplicate
+        const exists = withoutTemps.some((c) => c.id === saved.id)
+        const next = exists ? withoutTemps : [saved, ...withoutTemps]
+        return sortComments(next)
       })
     },
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ['comments', slug] })
-    },
+    // Avoid immediate refetch to prevent UI bounce; background updates arrive via Pusher
+    // Users can navigate or refresh to get a fresh list if needed.
   })
 
   const submit = (e: React.FormEvent) => {
@@ -112,6 +119,7 @@ export default function Comments({ slug }: { slug: string }) {
       ) : items.length === 0 ? (
         <p className="text-slate-600">Sin comentarios aún.</p>
       ) : (
+        <div className="relative">
         <ul className="mt-3 space-y-3">
           {items.map((c) => {
             const displayName = c.user.name || c.user.email || 'User'
@@ -139,10 +147,12 @@ export default function Comments({ slug }: { slug: string }) {
             )
           })}
         </ul>
+        {isFetching && !isLoading && (
+          <div className="absolute right-0 -top-6 text-xs text-slate-500">Actualizando…</div>
+        )}
+        </div>
       )}
-      {isFetching && !isLoading && (
-        <p className="mt-2 text-xs text-slate-500">Actualizando…</p>
-      )}
+
 
       <div className="mt-4">
         {session ? (
