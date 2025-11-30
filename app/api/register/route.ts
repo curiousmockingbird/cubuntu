@@ -5,9 +5,13 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
-    const { name, username, email, password } = await req.json();
+    const body = await req.json();
+    const name: string | undefined = body?.name ? String(body.name) : undefined;
+    const username: string | undefined = body?.username ? String(body.username) : undefined;
+    const email: string = String(body?.email || '').toLowerCase().trim();
+    const password: string = String(body?.password || '');
 
-    if (!email || !password || !username) {
+    if (!email || !password) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 },
@@ -16,7 +20,10 @@ export async function POST(req: Request) {
 
     const existing = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }],
+        OR: [
+          { email },
+          ...(username ? [{ username }] : []),
+        ],
       },
     });
 
@@ -31,8 +38,8 @@ export async function POST(req: Request) {
 
     await prisma.user.create({
       data: {
-        name,
-        username,
+        name: name || null,
+        username: username || null,
         email,
         passwordHash,
       },

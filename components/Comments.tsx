@@ -161,7 +161,7 @@ export default function Comments({ slug }: { slug: string }) {
           </form>
         ) : (
           <p className="text-slate-600 text-sm">
-            <a href="/login" className="text-blue-600 hover:underline">Inicia sesión</a> para dejar comentario.
+            <a href="/auth" className="text-blue-600 hover:underline">Inicia sesión</a> para dejar comentario.
           </p>
         )}
       </div>
