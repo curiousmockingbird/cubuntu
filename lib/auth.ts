@@ -16,8 +16,26 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
+        loginToken: { label: 'Login Token', type: 'text' },
       },
       async authorize(credentials) {
+        const loginToken = (credentials as any)?.loginToken as string | undefined
+        if (loginToken) {
+          // One-time token sign-in (used after email verification)
+          const vt = await prisma.verificationToken.findFirst({
+            where: { token: loginToken, identifier: { startsWith: 'verify-login:' } },
+          })
+          if (!vt || vt.expires < new Date()) {
+            return null
+          }
+          const emailFromId = vt.identifier.replace('verify-login:', '')
+          const user = await prisma.user.findUnique({ where: { email: emailFromId } })
+          // Consume token regardless of user lookup result to avoid reuse
+          await prisma.verificationToken.delete({ where: { identifier_token: { identifier: vt.identifier, token: vt.token } } }).catch(() => {})
+          if (!user) return null
+          return { id: user.id, name: user.name, email: user.email || undefined, image: user.image || undefined }
+        }
+
         const email = credentials?.email?.toLowerCase().trim()
         const password = credentials?.password || ''
         if (!email || !password) return null

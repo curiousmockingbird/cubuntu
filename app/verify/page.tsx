@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { signIn } from 'next-auth/react'
 
 export default function VerifySignupPage() {
   const search = useSearchParams()
@@ -25,7 +26,12 @@ export default function VerifySignupPage() {
           setMessage(j.error || 'Verification failed')
         } else {
           setStatus('ok')
-          setMessage('Email verified! Your account has been created.')
+          setMessage('Email verified! Signing you in…')
+          const t = (j as any).loginToken as string | undefined
+          if (t) {
+            // Auto sign-in using one-time token
+            await signIn('credentials', { loginToken: t, callbackUrl: '/' })
+          }
         }
       } catch (err) {
         setStatus('error')
@@ -47,4 +53,3 @@ export default function VerifySignupPage() {
     </section>
   )
 }
-

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import crypto from 'crypto'
 const PREFIX = 'signup:'
 
 export async function POST(req: Request) {
@@ -60,10 +61,20 @@ export async function POST(req: Request) {
       },
     })
 
-    // Consume token
+    // Consume signup token
     await prisma.verificationToken.delete({ where: { identifier_token: { identifier: vt.identifier, token: vt.token } } }).catch(() => {})
 
-    return NextResponse.json({ ok: true })
+    // Create a short-lived one-time login token to auto sign-in the user
+    const loginToken = crypto.randomBytes(32).toString('hex')
+    await prisma.verificationToken.create({
+      data: {
+        identifier: `verify-login:${payload.email}`,
+        token: loginToken,
+        expires: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
+      },
+    })
+
+    return NextResponse.json({ ok: true, loginToken })
   } catch (e) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
