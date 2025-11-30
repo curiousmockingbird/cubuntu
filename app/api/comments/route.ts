@@ -41,9 +41,10 @@ export async function POST(req: NextRequest) {
   const created = await prisma.comment.create({
     data: {
       episodeSlug: body.slug,
-      userId: session.user.id,
       content,
-      parentId: body.parentId || null,
+      user: { connect: { id: session.user.id } },
+      // Use relation connect instead of FK field to be compatible with Checked input
+      ...(body.parentId ? { parent: { connect: { id: body.parentId } } } : {}),
     },
     include: { user: { select: { id: true, name: true, email: true, image: true } } },
   })
