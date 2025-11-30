@@ -136,13 +136,20 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
     setError(null)
     setLoading(true)
     try {
-      if (!name.trim()) {
-        throw new Error('Name is required')
+      const nm = name.trim()
+      const un = username.trim()
+      if (!nm) throw new Error('Name is required')
+      if (nm.length < 2 || nm.length > 50) throw new Error('Name must be 2–50 characters')
+      if (un && (un.length < 3 || un.length > 32)) throw new Error('Username must be 3–32 characters')
+      if (un) {
+        const r = await fetch(`/api/users/exists?username=${encodeURIComponent(un)}`)
+        const j = await r.json().catch(() => ({} as any))
+        if (r.ok && j.exists) throw new Error('Username already taken')
       }
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), username: username || undefined, email, password }),
+        body: JSON.stringify({ name: nm, username: un || undefined, email, password }),
       })
       const j = await res.json().catch(() => ({} as any))
       if (!res.ok) throw new Error((j as any).error || 'Failed to create account')
@@ -165,11 +172,13 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
       </div>
       <div>
         <label className="block text-sm mb-1" htmlFor="name">Name</label>
-        <input id="name" required className="w-full rounded border px-3 py-2" value={name} onChange={(e) => setName(e.target.value)} />
+        <input id="name" required minLength={2} maxLength={50} className="w-full rounded border px-3 py-2" value={name} onChange={(e) => setName(e.target.value)} />
+        <p className="text-xs text-slate-500 mt-1">2–50 characters</p>
       </div>
       <div>
         <label className="block text-sm mb-1" htmlFor="username">Username (optional)</label>
-        <input id="username" className="w-full rounded border px-3 py-2" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <input id="username" minLength={3} maxLength={32} className="w-full rounded border px-3 py-2" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <p className="text-xs text-slate-500 mt-1">3–32 characters</p>
       </div>
       <div>
         <label className="block text-sm mb-1" htmlFor="password">Password</label>

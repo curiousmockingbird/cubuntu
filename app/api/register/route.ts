@@ -18,20 +18,31 @@ export async function POST(req: Request) {
       );
     }
 
-    const existing = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          ...(username ? [{ username }] : []),
-        ],
-      },
-    });
-
-    if (existing) {
+    // Length validation
+    if (name.length < 2 || name.length > 50) {
       return NextResponse.json(
-        { error: 'Email or username already in use' },
-        { status: 409 },
+        { error: 'Name must be between 2 and 50 characters' },
+        { status: 400 },
       );
+    }
+    const uname = username?.trim()
+    if (uname && (uname.length < 3 || uname.length > 32)) {
+      return NextResponse.json(
+        { error: 'Username must be between 3 and 32 characters' },
+        { status: 400 },
+      );
+    }
+
+    // Uniqueness checks with specific messages
+    if (uname) {
+      const byUsername = await prisma.user.findUnique({ where: { username: uname } })
+      if (byUsername) {
+        return NextResponse.json({ error: 'Username already in use' }, { status: 409 })
+      }
+    }
+    const byEmail = await prisma.user.findUnique({ where: { email } })
+    if (byEmail) {
+      return NextResponse.json({ error: 'Email already in use' }, { status: 409 })
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -39,7 +50,7 @@ export async function POST(req: Request) {
     await prisma.user.create({
       data: {
         name,
-        username: username || null,
+        username: uname || null,
         email,
         passwordHash,
       },
