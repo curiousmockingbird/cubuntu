@@ -6,12 +6,12 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const name: string | undefined = body?.name ? String(body.name) : undefined;
+    const name: string = String(body?.name || '').trim();
     const username: string | undefined = body?.username ? String(body.username) : undefined;
     const email: string = String(body?.email || '').toLowerCase().trim();
     const password: string = String(body?.password || '');
 
-    if (!email || !password) {
+    if (!email || !password || !name) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 },
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
     await prisma.user.create({
       data: {
-        name: name || null,
+        name,
         username: username || null,
         email,
         passwordHash,
