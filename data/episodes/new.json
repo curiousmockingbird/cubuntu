@@ -5,6 +5,7 @@
   "duration": "08:24",
   "description": "Kickoff episode introducing the podcast, goals, and format.",
   "audioUrl": "/audio/deep-dive-into-mvp.mp3",
+    "image": "/images/placeholder.svg",
   "showNotes": [
     "In this episode we outline the vision for the podcast.",
     "We also cover what to expect in upcoming episodes."

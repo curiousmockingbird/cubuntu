@@ -179,73 +179,32 @@ export default function AudioPlayer({
             {isPlaying ? "⏸" : "▶️"}
           </button>
 
-          <div className="text-sm text-slate-600 tabular-nums w-12 text-center">
+          {/* <div className="text-sm text-slate-600 tabular-nums w-12 text-center">
             {fmt(time)}
-          </div>
+          </div> */}
           
           {/* Rounded here */}
-            <div className="relative flex items-center">
+          <div className="relative flex flex-1 items-center">
             <div
-              className="relative w-10 h-10"
-              onPointerDown={(e) => {
-              const el = e.currentTarget as HTMLDivElement;
-              if (!duration || duration <= 0) return;
-              const rect = el.getBoundingClientRect();
-              const cx = rect.left + rect.width / 2;
-              const cy = rect.top + rect.height / 2;
-              const x = (e.nativeEvent as PointerEvent).clientX - cx;
-              const y = (e.nativeEvent as PointerEvent).clientY - cy;
-              let angle = Math.atan2(y, x); // -PI..PI
-              // rotate so top = 0
-              angle += Math.PI / 2;
-              if (angle < 0) angle += 2 * Math.PI;
-              const pct = Math.max(0, Math.min(1, angle / (2 * Math.PI)));
-              seek(pct * duration);
-              }}
-              role="slider"
+              className="pointer-events-none absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded bg-slate-200"
+              style={{ width: `${bufferedPct}%` }}
+              aria-hidden
+            />
+            <input
+              className="w-full"
+              type="range"
+              min={0}
+              max={Math.max(1, duration)}
+              step={0.1}
+              value={time}
+              onChange={onSeekInput}
+              onMouseUp={onSeekCommit}
+              onKeyUp={onSeekCommit}
               aria-label="Seek"
-              tabIndex={0}
-            >
-              <svg viewBox="0 0 44 44" className="w-full h-full">
-              {/* base track */}
-              <circle cx="22" cy="22" r="18" className="stroke-slate-200" strokeWidth="4" fill="none" />
-              {/* buffered arc */}
-              <circle
-                cx="22"
-                cy="22"
-                r="18"
-                className="stroke-slate-300"
-                strokeWidth="4"
-                fill="none"
-                strokeDasharray={2 * Math.PI * 18}
-                strokeDashoffset={2 * Math.PI * 18 * (1 - bufferedPct / 100)}
-                strokeLinecap="round"
               />
-              {/* played arc */}
-              <circle
-                cx="22"
-                cy="22"
-                r="18"
-                className="stroke-blue-600"
-                strokeWidth="4"
-                fill="none"
-                strokeDasharray={2 * Math.PI * 18}
-                strokeDashoffset={
-                2 * Math.PI * 18 * (1 - (duration ? Math.min(100, (time / duration) * 100) : 0) / 100)
-                }
-                strokeLinecap="round"
-              />
-              </svg>
+        </div>
+            
 
-              {/* <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-600 tabular-nums pointer-events-none">
-              {fmt(time)}
-              </div> */}
-            </div>
-            </div>
-
-          <div className="text-sm text-slate-600 tabular-nums w-12 text-center">
-            {fmt(duration)}
-          </div>
         </div>
       ) : (
         <>

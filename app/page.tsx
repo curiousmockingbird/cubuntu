@@ -14,29 +14,30 @@ export default async function HomePage() {
   const episodes = await getAllEpisodes();
   return (
     <section>
-      <h2 className="mb-4 text-2xl font-semibold tracking-tight ">
-        Latest Episodes
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
+      <h2 className="mb-6 text-3xl font-semibold tracking-tight">All Episodes</h2>
+
+      {/* List-style layout inspired by the screenshot */}
+      <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
         {episodes.map((ep) => (
-          <article
-            key={ep.slug}
-            className="group grid grid-cols-[160px_1fr] gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:grid-cols-1"
-          >
-            <div className="relative w-full overflow-hidden rounded-lg bg-slate-100">
-              <Link href={`/episodes/${ep.slug}`}>
-                <Image
-                  src={ep.image || "/images/placeholder.svg"}
-                  alt={ep.title}
-                  width={160}
-                  height={160}
-                  sizes="(max-width: 640px) 100vw, 160px"
-                  className="h-full w-full object-cover transform transition-transform duration-300 ease-out group-hover:scale-[1.02]"
-                />
-              </Link>
-            </div>
-            <div className="flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">
+          <article key={ep.slug} className="group flex flex-col md:flex-row gap-4 p-4 sm:p-5">
+            {/* Cover */}
+            <Link
+              href={`/episodes/${ep.slug}`}
+              className="relative overflow-hidden rounded-lg bg-slate-100 w-full md:w-auto"
+            >
+              <Image
+                src={ep.image || "/images/placeholder.svg"}
+                alt={ep.title}
+                width={192}
+                height={192}
+                sizes="(max-width: 768px) 100vw, 192px"
+                className="h-40 w-full md:h-32 md:w-32 object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]"
+              />
+            </Link>
+
+            {/* Main content */}
+            <div className="min-w-0 flex-1">
+              <h3 className="text-lg sm:text-xl font-semibold leading-snug">
                 <Link
                   className="text-slate-900 hover:text-blue-700"
                   href={`/episodes/${ep.slug}`}
@@ -44,25 +45,38 @@ export default async function HomePage() {
                   {ep.title}
                 </Link>
               </h3>
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">
-                  📅 {new Date(ep.date).toLocaleDateString()}
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">
-                  ⏱️ {ep.duration}
-                </span>
+
+              {/* Description */}
+              <p className="mt-2 text-slate-700 text-sm sm:text-base">
+                {ep.description}
+              </p>
+
+              {/* Meta + progress hint */}
+              <div className="mt-3 flex items-center gap-3 text-sm text-slate-600">
+                <span>{new Date(ep.date).toLocaleDateString()}</span>
+                <span>•</span>
+                <span>{ep.duration}</span>
+                <span className="hidden sm:block">•</span>
+                {/* Decorative thin progress bar for visual parity */}
+                <span className="hidden sm:block h-1 w-28 rounded bg-slate-200" aria-hidden />
               </div>
-              <p className="text-slate-700">{ep.description}</p>
             </div>
-            <div className="mt-1 flex items-center gap-3">
-              <AudioPlayer src={ep.audioUrl} compact />
-              <Link
-                className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-3 py-1.5 text-blue-700 hover:bg-slate-50"
-                href={`/episodes/${ep.slug}`}
+
+            {/* Actions / Play */}
+            <div className="flex shrink-0 md:flex-col items-center md:items-end justify-between gap-3 mt-3 md:mt-0">
+              {/* Add button placeholder */}
+              <button
+                type="button"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-700 hover:bg-slate-50"
+                aria-label="Save episode"
+                title="Save episode"
               >
-                Detalles
-                <span aria-hidden>→</span>
-              </Link>
+                +
+              </button>
+
+              <div className="w-full md:w-auto md:self-end">
+                <AudioPlayer src={ep.audioUrl} compact />
+              </div>
             </div>
           </article>
         ))}
