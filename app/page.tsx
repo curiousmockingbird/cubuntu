@@ -14,10 +14,10 @@ export default async function HomePage() {
   const episodes = await getAllEpisodes();
   return (
     <section>
-      <h2 className="mb-4 text-2xl font-semibold tracking-tight">
+      <h2 className="mb-4 text-2xl font-semibold tracking-tight ">
         Latest Episodes
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
         {episodes.map((ep) => (
           <article
             key={ep.slug}
@@ -53,16 +53,16 @@ export default async function HomePage() {
                 </span>
               </div>
               <p className="text-slate-700">{ep.description}</p>
-              <div className="mt-1 flex items-center gap-3">
-                <AudioPlayer src={ep.audioUrl} compact />
-                <Link
-                  className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-3 py-1.5 text-blue-700 hover:bg-slate-50"
-                  href={`/episodes/${ep.slug}`}
-                >
-                  Detalles
-                  <span aria-hidden>→</span>
-                </Link>
-              </div>
+            </div>
+            <div className="mt-1 flex items-center gap-3">
+              <AudioPlayer src={ep.audioUrl} compact />
+              <Link
+                className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-3 py-1.5 text-blue-700 hover:bg-slate-50"
+                href={`/episodes/${ep.slug}`}
+              >
+                Detalles
+                <span aria-hidden>→</span>
+              </Link>
             </div>
           </article>
         ))}
