@@ -29,7 +29,7 @@ export default async function EpisodePage({ params }: Params) {
         </div>
 
         {/* Audio player */}
-        <div className="flex items-start md:items-center">
+        <div >
           <AudioPlayer src={episode.audioUrl} />
         </div>
       </div>

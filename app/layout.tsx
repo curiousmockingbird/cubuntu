@@ -1,4 +1,5 @@
 import './globals.css';
+import 'react-h5-audio-player/lib/styles.css';
 import type { Metadata } from 'next';
 import SiteHeader from '../components/SiteHeader';
 import Providers from './providers';
