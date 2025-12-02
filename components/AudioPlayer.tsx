@@ -68,14 +68,14 @@ export default function AudioPlayer({
       type="button"
       onClick={cycleRate}
       aria-label="Change speed"
-      className="text-xs rounded border px-2 py-1 border-slate-200 bg-slate-50 hover:bg-slate-100"
+      className="text-xs rounded border px-2 py-1 border-red-200 bg-red-50 hover:bg-red-100"
     >
       {rate.toFixed(2)}x
     </button>
   );
 
   return (
-    <div className={`rounded-lg border border-slate-200 bg-white ${compact ? "p-2" : "p-3"}`}>
+    <div className={`rounded-lg border border-red-200 bg-white ${compact ? "p-2" : "p-3"}`}>
       <H5AudioPlayer
         ref={playerRef}
         src={resolvedSrc}

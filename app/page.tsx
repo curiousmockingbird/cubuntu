@@ -67,7 +67,7 @@ export default async function HomePage() {
               {/* Add button placeholder */}
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-700 hover:bg-slate-50"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-red-700 hover:bg-slate-50"
                 aria-label="Save episode"
                 title="Save episode"
               >
