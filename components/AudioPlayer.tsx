@@ -75,7 +75,7 @@ export default function AudioPlayer({
   );
 
   return (
-    <div className={`rounded-lg border border-red-200 bg-white ${compact ? "p-2" : "p-3"}`}>
+    <div className={`custom-rhap rounded-lg border border-red-200 bg-white ${compact ? "p-2" : "p-3"}`}>
       <H5AudioPlayer
         ref={playerRef}
         src={resolvedSrc}
@@ -94,4 +94,3 @@ export default function AudioPlayer({
     </div>
   );
 }
-

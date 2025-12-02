@@ -8,3 +8,33 @@
   /* Simple shared text styles */
   .muted { @apply text-slate-500; }
 }
+
+/* react-h5-audio-player theme overrides (scoped) */
+.custom-rhap .rhap_container {
+  background: transparent;
+  box-shadow: none;
+}
+.custom-rhap .rhap_main-controls-button,
+.custom-rhap .rhap_rewind-button,
+.custom-rhap .rhap_forward-button,
+.custom-rhap .rhap_repeat-button,
+.custom-rhap .rhap_volume-button {
+  color: #2563eb; /* tailwind blue-600 */
+}
+/* .custom-rhap .rhap_progress-filled,
+.custom-rhap .rhap_download-progress {
+  background-color: #2563eb; 
+} */
+.custom-rhap .rhap_progress-indicator {
+  background-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.custom-rhap .rhap_volume-bar {
+  background-color: #e2e8f0; /* slate-200 */
+}
+.custom-rhap .rhap_volume-indicator {
+  background-color: #2563eb;
+}
+.custom-rhap .rhap_time {
+  color: #64748b; /* slate-500 */
+}
