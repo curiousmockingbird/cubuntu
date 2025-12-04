@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import AudioPlayer from "../components/AudioPlayer";
 import { getAllEpisodes } from "../lib/episodes";
+import AudioDuration from "../components/AudioDuration";
 
 export const revalidate = 3600;
 
@@ -55,7 +56,7 @@ export default async function HomePage() {
               <div className="mt-3 flex items-center gap-3 text-sm text-slate-600">
                 <span>{new Date(ep.date).toLocaleDateString()}</span>
                 <span>•</span>
-                <span>{ep.duration}</span>
+                <span>⏱️ <AudioDuration src={ep.audioUrl} /></span>
                 <span className="hidden sm:block">•</span>
                 {/* Decorative thin progress bar for visual parity */}
                 <span className="hidden sm:block h-1 w-28 rounded bg-slate-200" aria-hidden />

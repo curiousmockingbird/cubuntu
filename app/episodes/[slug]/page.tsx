@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
 import AudioPlayer from "../../../components/AudioPlayer";
+import AudioDuration from "../../../components/AudioDuration";
 import Comments from "../../../components/Comments";
 import { getEpisodeBySlug, getEpisodeSlugs } from "../../../lib/episodes";
 
@@ -48,7 +49,7 @@ export default async function EpisodePage({ params }: Params) {
               📅 {new Date(episode.date).toLocaleDateString()}
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">
-              ⏱️ {episode.duration}
+              ⏱️ <AudioDuration src={episode.audioUrl} />
             </span>
           </div>
 
