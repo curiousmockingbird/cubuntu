@@ -7,7 +7,7 @@ export default async function SiteHeader() {
   const session = await getServerSession(authOptions)
   const user = session?.user
   return (
-    <header className="mb-6">
+    <header className="mb-6 bg-red-50">
       <h1 className="mb-1 text-2xl font-semibold">
         <Link href="/" className="text-blue-600 hover:underline">
           Podcast MVP
