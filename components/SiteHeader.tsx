@@ -1,49 +1,22 @@
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../lib/auth'
-import SignOutButton from './SignOutButton'
+import PrimaryNav, { type SimpleUser } from './PrimaryNav'
 
 export default async function SiteHeader() {
   const session = await getServerSession(authOptions)
-  const user = session?.user
+  const user = (session?.user ?? null) as SimpleUser
   return (
     <header className="mb-6 bg-red-50">
+      <section className='flex flex-col items-center'>
       <h1 className="mb-1 text-2xl font-semibold">
         <Link href="/" className="text-blue-600 hover:underline">
           Podcast MVP
         </Link>
       </h1>
       <p className="muted">A minimal podcast website built with Next.js</p>
-      <nav className="mt-2 flex flex-wrap items-center gap-4" aria-label="Primary">
-        <Link className="text-blue-600 hover:underline" href="/about">About</Link>
-        <Link className="text-blue-600 hover:underline" href="/social">Social Media</Link>
-        <Link className="text-blue-600 hover:underline" href="/donate">Donate</Link>
-        <span className="flex-1" />
-        {user ? (
-          <div className="flex items-center gap-3 text-sm">
-            {/* User avatar (image or initial) */}
-            {user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.image}
-                alt={(user.name || user.email || 'User') as string}
-                className="h-8 w-8 rounded-full object-cover border"
-              />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium">
-                {((user.name || user.email || 'U') as string).charAt(0).toUpperCase()}
-              </div>
-            )}
-            <span className="text-slate-600">Hi, {user.name || user.email}</span>
-            <SignOutButton />
-          </div>
-        ) : (
-          <>
-            <Link className="text-blue-600 hover:underline" href="/auth">Sign in</Link>
-            {/* <Link className="text-blue-600 hover:underline" href="/auth?mode=signup">Register</Link> */}
-          </>
-        )}
-      </nav>
+      </section>
+      <PrimaryNav user={user} />
     </header>
   )
 }
