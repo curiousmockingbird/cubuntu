@@ -9,6 +9,21 @@
   .muted { @apply text-slate-500; }
 }
 
+/* Minimal line clamp utility (3 lines) */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Mobile default */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  /* Tablet/Desktop: clamp to 2 lines */
+  .line-clamp-3 {
+    -webkit-line-clamp: 2;
+  }
+}
+
 /* react-h5-audio-player theme overrides (scoped) */
 .custom-rhap .rhap_container {
   background: transparent;

@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
-          <div className="mx-auto max-w-3xl px-4 pb-12 pt-6">
+          <div className="mx-auto max-w-4xl px-4 pb-12 pt-6">
             <SiteHeader />
             <main>{children}</main>
             <SiteFooter />

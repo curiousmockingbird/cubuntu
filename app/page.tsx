@@ -47,10 +47,15 @@ export default async function HomePage() {
                 </Link>
               </h3>
 
-              {/* Description */}
-              <p className="mt-2 text-slate-700 text-sm sm:text-base">
+              {/* Description (clamped to 3 lines) + Details link */}
+              <p className="mt-2 text-slate-700 text-sm sm:text-base line-clamp-3">
                 {ep.description}
               </p>
+              <div className="mt-1">
+                <Link href={`/episodes/${ep.slug}`} className="text-blue-600 hover:underline text-sm">
+                  Leer más &rarr;
+                </Link>
+              </div>
 
               {/* Meta + progress hint */}
               <div className="mt-3 flex items-center gap-3 text-sm text-slate-600">
