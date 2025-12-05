@@ -20,6 +20,7 @@ export default function Comments({ slug }: { slug: string }) {
   const qc = useQueryClient()
   const [content, setContent] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyContent, setReplyContent] = useState('')
   const sortTopLevel = (arr: Comment[]) => arr.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -175,14 +176,49 @@ export default function Comments({ slug }: { slug: string }) {
 
   return (
     <section className="mt-8">
-      <h3 className="text-lg font-semibold">Comentarios ({items.length})</h3>
-      {isLoading ? (
-        <p className="text-slate-600">Cargando…</p>
-      ) : items.length === 0 ? (
-        <p className="text-slate-600">Sin comentarios aún.</p>
-      ) : (
-        <div className="relative">
-        <ul className="mt-3 space-y-3">
+      <h3
+        className="text-lg font-semibold cursor-pointer select-none inline-flex items-center gap-2 hover:text-blue-700"
+        role="button"
+        onClick={() => setIsOpen(true)}
+        title="Abrir comentarios"
+      >
+        Comentarios ({items.length})
+      </h3>
+
+      {/* Panel overlay */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50">
+          {/* Backdrop with blur */}
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
+          {/* Slide-over panel */}
+          <aside
+            role="dialog"
+            aria-modal="true"
+            className="absolute inset-y-0 right-0 w-full max-w-xl bg-white shadow-2xl border-l flex flex-col"
+          >
+            <div className="px-4 py-3 sm:px-6 border-b flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Comentarios ({items.length})</h3>
+              <button
+                type="button"
+                className="rounded p-1.5 text-slate-600 hover:bg-slate-100"
+                aria-label="Cerrar"
+                onClick={() => setIsOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="relative flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+              {isLoading ? (
+                <p className="text-slate-600">Cargando…</p>
+              ) : items.length === 0 ? (
+                <p className="text-slate-600">Sin comentarios aún.</p>
+              ) : (
+                <div className="relative">
+                <ul className="space-y-3">
           {items.map((c) => {
             const displayName = c.user.name || c.user.email || 'User'
             const initial = (displayName || 'U').charAt(0).toUpperCase()
@@ -270,30 +306,42 @@ export default function Comments({ slug }: { slug: string }) {
           <div className="absolute right-0 -top-6 text-xs text-slate-500">Actualizando…</div>
         )}
         </div>
+              )}
+            </div>
+
+            <div className="px-4 pb-4 sm:px-6 border-t">
+              {session ? (
+                <form onSubmit={submit} className="space-y-2">
+                  <textarea
+                    className="w-full rounded border px-3 py-2"
+                    rows={3}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Déjanos tu comentario…"
+                  />
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      className="rounded-md border px-4 py-2 text-slate-700 hover:bg-slate-50"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Cerrar
+                    </button>
+                    <button className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white" type="submit">
+                      Publicar
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <p className="text-slate-600 text-sm">
+                  <a href="/auth" className="text-blue-600 hover:underline">Inicia sesión</a> para dejar comentario.
+                </p>
+              )}
+            </div>
+          </aside>
+        </div>
       )}
-
-
-      <div className="mt-4">
-        {session ? (
-          <form onSubmit={submit} className="space-y-2 max-w-xl">
-            <textarea
-              className="w-full rounded border px-3 py-2"
-              rows={3}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Déjanos tu comentario…"
-            />
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <button className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white" type="submit">
-              Publicar
-            </button>
-          </form>
-        ) : (
-          <p className="text-slate-600 text-sm">
-            <a href="/auth" className="text-blue-600 hover:underline">Inicia sesión</a> para dejar comentario.
-          </p>
-        )}
-      </div>
     </section>
   )
 }
