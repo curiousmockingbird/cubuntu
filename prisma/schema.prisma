@@ -114,4 +114,9 @@ createdAt DateTime @default(now())
 
 user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+// Self-relation for threaded replies
+parentId String?
+parent   Comment? @relation("CommentToReplies", fields: [parentId], references: [id], onDelete: Cascade)
+replies  Comment[] @relation("CommentToReplies")
+
 }

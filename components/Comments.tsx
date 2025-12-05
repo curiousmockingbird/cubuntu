@@ -11,6 +11,8 @@ type Comment = {
   content: string
   createdAt: string
   user: { id: string; name?: string | null; email?: string | null; image?: string | null }
+  parentId?: string | null
+  replies?: Comment[]
 }
 
 export default function Comments({ slug }: { slug: string }) {
@@ -18,8 +20,10 @@ export default function Comments({ slug }: { slug: string }) {
   const qc = useQueryClient()
   const [content, setContent] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const sortComments = (arr: Comment[]) =>
-    arr.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [replyContent, setReplyContent] = useState('')
+  const sortTopLevel = (arr: Comment[]) => arr.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  const sortRepliesAsc = (arr: Comment[]) => arr.slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
 
   const { data: items = [], isLoading, isFetching } = useQuery({
     queryKey: ['comments', slug],
@@ -27,9 +31,13 @@ export default function Comments({ slug }: { slug: string }) {
       const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, { cache: 'no-store' })
       if (!res.ok) throw new Error('Failed to load comments')
       const data = (await res.json()) as { comments: Comment[] }
-      return data.comments
+      // Ensure sort order: top-level desc, replies asc
+      return sortTopLevel(
+        (data.comments || []).map((c) => ({ ...c, replies: c.replies ? sortRepliesAsc(c.replies) : [] }))
+      )
     },
-    select: (data) => sortComments(data),
+    // Data is already sorted; keep select identity
+    select: (data) => data,
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   })
@@ -46,8 +54,27 @@ export default function Comments({ slug }: { slug: string }) {
 
     const handler = (c: Comment) => {
       qc.setQueryData<Comment[]>(['comments', slug], (old = []) => {
+        // Reply event
+        if (c.parentId) {
+          const next = old.map((top) => {
+            if (top.id !== c.parentId) return top
+            const existing = (top.replies || [])
+            if (existing.some((r) => r.id === c.id)) return top
+            const replies = sortRepliesAsc([...(top.replies || []), c])
+            return { ...top, replies }
+          })
+          // If parent not found, trigger background refetch to sync
+          const parentExists = next.some((t) => t.id === c.parentId)
+          if (!parentExists) {
+            // fire-and-forget invalidate
+            qc.invalidateQueries({ queryKey: ['comments', slug] })
+            return old
+          }
+          return next
+        }
+        // Top-level event
         if (old.some((x) => x.id === c.id)) return old
-        return sortComments([c, ...old])
+        return sortTopLevel([{ ...c, replies: c.replies ? sortRepliesAsc(c.replies) : [] }, ...old])
       })
     }
 
@@ -61,7 +88,7 @@ export default function Comments({ slug }: { slug: string }) {
   }, [slug, qc])
 
   const addComment = useMutation({
-    mutationFn: async (payload: { slug: string; content: string }) => {
+    mutationFn: async (payload: { slug: string; content: string; parentId?: string | null }) => {
       const res = await fetch('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -81,8 +108,21 @@ export default function Comments({ slug }: { slug: string }) {
         content: newComment.content,
         createdAt: new Date().toISOString(),
         user: { id: session?.user?.id || 'me', name: session?.user?.name || null, email: session?.user?.email || null, image: (session as any)?.user?.image || null },
+        parentId: newComment.parentId ?? null,
       }
-      qc.setQueryData<Comment[]>(['comments', slug], (old = []) => sortComments([temp, ...old]))
+      if (newComment.parentId) {
+        // Optimistically add reply to its parent
+        qc.setQueryData<Comment[]>(['comments', slug], (old = []) => {
+          return old.map((top) => {
+            if (top.id !== newComment.parentId) return top
+            const replies = sortRepliesAsc([...(top.replies || []), temp])
+            return { ...top, replies }
+          })
+        })
+      } else {
+        // Optimistically add as top-level
+        qc.setQueryData<Comment[]>(['comments', slug], (old = []) => sortTopLevel([{ ...temp, replies: [] }, ...old]))
+      }
       return { prev }
     },
     onError: (err, _vars, ctx) => {
@@ -92,12 +132,27 @@ export default function Comments({ slug }: { slug: string }) {
     onSuccess: (saved) => {
       // Replace temp with saved or just prepend saved and filter temps
       qc.setQueryData<Comment[]>(['comments', slug], (old = []) => {
-        const withoutTemps = old.filter((c) => !c.id.startsWith('temp-'))
-        // If the saved already exists (e.g., via Pusher), skip adding duplicate
-        const exists = withoutTemps.some((c) => c.id === saved.id)
-        const next = exists ? withoutTemps : [saved, ...withoutTemps]
-        return sortComments(next)
+        if (saved.parentId) {
+          return old.map((top) => {
+            if (top.id !== saved.parentId) return top
+            const existing = top.replies || []
+            const exists = existing.some((r) => r.id === saved.id)
+            const replies = exists ? existing : sortRepliesAsc([...existing, saved])
+            // Strip temps
+            const withoutTemps = replies.filter((r) => !r.id.startsWith('temp-'))
+            return { ...top, replies: withoutTemps }
+          })
+        }
+        const withoutTempsTop = old.filter((c) => !c.id.startsWith('temp-'))
+        const existsTop = withoutTempsTop.some((c) => c.id === saved.id)
+        const next = existsTop ? withoutTempsTop : [{ ...saved, replies: [] }, ...withoutTempsTop]
+        return sortTopLevel(next)
       })
+      // Reset reply UI if we just replied
+      if (saved.parentId && replyingTo === saved.parentId) {
+        setReplyContent('')
+        setReplyingTo(null)
+      }
     },
     // Avoid immediate refetch to prevent UI bounce; background updates arrive via Pusher
     // Users can navigate or refresh to get a fresh list if needed.
@@ -109,6 +164,13 @@ export default function Comments({ slug }: { slug: string }) {
     if (!text) return
     addComment.mutate({ slug, content: text })
     setContent('')
+  }
+
+  const submitReply = (e: React.FormEvent, parentId: string) => {
+    e.preventDefault()
+    const text = replyContent.trim()
+    if (!text) return
+    addComment.mutate({ slug, content: text, parentId })
   }
 
   return (
@@ -141,6 +203,63 @@ export default function Comments({ slug }: { slug: string }) {
                       <span className="ml-2">{new Date(c.createdAt).toLocaleString()}</span>
                     </div>
                     <p className="mt-1 whitespace-pre-wrap">{c.content}</p>
+                    <div className="mt-2 text-sm">
+                      {session && (
+                        <button
+                          className="text-blue-600 hover:underline"
+                          type="button"
+                          onClick={() => setReplyingTo((prev) => (prev === c.id ? null : c.id))}
+                        >
+                          {replyingTo === c.id ? 'Cancelar' : 'Responder'}
+                        </button>
+                      )}
+                    </div>
+
+                    {replyingTo === c.id && session && (
+                      <form onSubmit={(e) => submitReply(e, c.id)} className="mt-2 space-y-2">
+                        <textarea
+                          className="w-full rounded border px-3 py-2"
+                          rows={2}
+                          value={replyContent}
+                          onChange={(e) => setReplyContent(e.target.value)}
+                          placeholder="Escribe una respuesta…"
+                        />
+                        {error && <p className="text-sm text-red-600">{error}</p>}
+                        <button className="rounded-md border border-blue-600 bg-blue-600 px-3 py-1.5 text-white" type="submit">
+                          Responder
+                        </button>
+                      </form>
+                    )}
+
+                    {c.replies && c.replies.length > 0 && (
+                      <ul className="mt-3 space-y-2">
+                        {c.replies.map((r) => {
+                          const rName = r.user.name || r.user.email || 'User'
+                          const rInitial = (rName || 'U').charAt(0).toUpperCase()
+                          return (
+                            <li key={r.id} className="ml-8 rounded border border-slate-200 bg-slate-50 p-3">
+                              <div className="flex items-start gap-3">
+                                {r.user.image ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img src={r.user.image} alt={rName} className="h-7 w-7 rounded-full object-cover border" />
+                                ) : (
+                                  <div className="h-7 w-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-medium">
+                                    {rInitial}
+                                  </div>
+                                )}
+                                <div className="flex-1">
+                                  <div className="text-xs text-slate-600">
+                                    <strong>{rName}</strong>
+                                    <span className="ml-2">{new Date(r.createdAt).toLocaleString()}</span>
+                                  </div>
+                                  <p className="mt-1 whitespace-pre-wrap text-sm">{r.content}</p>
+                                </div>
+                              </div>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </li>
