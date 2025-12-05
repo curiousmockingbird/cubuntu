@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import AudioPlayer from "../../../components/AudioPlayer";
 import AudioDuration from "../../../components/AudioDuration";
+import RichText from "../../../components/RichText";
 import Comments from "../../../components/Comments";
 import { getEpisodeBySlug, getEpisodeSlugs } from "../../../lib/episodes";
 
@@ -58,7 +59,11 @@ export default async function EpisodePage({ params }: Params) {
             <p>{episode.description}</p>
 
             {episode.showNotes &&
-              episode.showNotes.map((p, i) => <p key={i}>{p}</p>)}
+              episode.showNotes.map((p, i) => (
+                <p key={i}>
+                  <RichText text={p} />
+                </p>
+              ))}
           </section>
         </div>
       </article>
