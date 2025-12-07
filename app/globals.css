@@ -34,21 +34,21 @@
 .custom-rhap .rhap_forward-button,
 .custom-rhap .rhap_repeat-button,
 .custom-rhap .rhap_volume-button {
-  color: #2563eb; /* tailwind blue-600 */
+  color: oklch(57.7% 0.245 27.325); /* tailwind red-600 */
 }
 /* .custom-rhap .rhap_progress-filled,
 .custom-rhap .rhap_download-progress {
   background-color: #2563eb; 
 } */
 .custom-rhap .rhap_progress-indicator {
-  background-color: #2563eb;
+  background-color: oklch(57.7% 0.245 27.325);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 .custom-rhap .rhap_volume-bar {
   background-color: #e2e8f0; /* slate-200 */
 }
 .custom-rhap .rhap_volume-indicator {
-  background-color: #2563eb;
+  background-color: oklch(57.7% 0.245 27.325);
 }
 .custom-rhap .rhap_time {
   color: #64748b; /* slate-500 */

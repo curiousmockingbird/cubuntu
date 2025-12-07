@@ -28,14 +28,14 @@ export default function PrimaryNav({ user }: Props) {
 
   const NavLinks = (
     <>
-      <Link className="text-blue-600 hover:underline" href="/about" onClick={() => setOpen(false)}>
-        About
+      <Link className="text-red-600 hover:underline" href="/about" onClick={() => setOpen(false)}>
+        Quiémes somos
       </Link>
-      <Link className="text-blue-600 hover:underline" href="/social" onClick={() => setOpen(false)}>
-        Social Media
+      <Link className="text-red-600 hover:underline" href="/social" onClick={() => setOpen(false)}>
+        Nuestras redes
       </Link>
-      <Link className="text-blue-600 hover:underline" href="/donate" onClick={() => setOpen(false)}>
-        Donate
+      <Link className="text-red-600 hover:underline" href="/donate" onClick={() => setOpen(false)}>
+        Donar
       </Link>
     </>
   );
@@ -58,7 +58,7 @@ export default function PrimaryNav({ user }: Props) {
       <SignOutButton />
     </div>
   ) : (
-    <Link className="text-blue-600 hover:underline" href="/auth" onClick={() => setOpen(false)}>
+    <Link className="text-red-600 hover:underline" href="/auth" onClick={() => setOpen(false)}>
       Sign in
     </Link>
   );
