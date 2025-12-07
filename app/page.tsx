@@ -14,11 +14,11 @@ export const metadata = {
 export default async function HomePage() {
   const episodes = await getAllEpisodes();
   return (
-    <section>
+    <section className="home-page">
       {/* Hero image at the top */}
       <div className="relative mb-8 overflow-hidden rounded-xl border border-slate-200 h-40 sm:h-56 md:h-72">
         <Image
-          src="/images/hero.svg"
+          src="/images/hero_new.svg"
           alt="Podcast hero"
           fill
           priority
@@ -27,7 +27,7 @@ export default async function HomePage() {
         />
       </div>
 
-      <h2 className="mb-6 text-3xl font-semibold tracking-tight">All Episodes</h2>
+      <h2 className="mb-6 text-sm font-semibold tracking-tight">Todos los episodios</h2>
 
       {/* List-style layout inspired by the screenshot */}
       <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">

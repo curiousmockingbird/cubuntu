@@ -53,3 +53,8 @@
 .custom-rhap .rhap_time {
   color: #64748b; /* slate-500 */
 }
+
+/* Hide site title on homepage only */
+body:has(main > .home-page) header h1 {
+  display: none;
+}
