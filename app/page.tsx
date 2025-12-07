@@ -15,6 +15,18 @@ export default async function HomePage() {
   const episodes = await getAllEpisodes();
   return (
     <section>
+      {/* Hero image at the top */}
+      <div className="relative mb-8 overflow-hidden rounded-xl border border-slate-200 sm:h-56 md:h-72">
+        <Image
+          src="/images/hero.svg"
+          alt="Podcast hero"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 768px, 1024px"
+          className="object-cover"
+        />
+      </div>
+
       <h2 className="mb-6 text-3xl font-semibold tracking-tight">All Episodes</h2>
 
       {/* List-style layout inspired by the screenshot */}
