@@ -38,9 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
-          <div className="mx-auto max-w-4xl px-4 pb-12 pt-6">
+          <div className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 pb-12 pt-6">
             <SiteHeader />
-            <main>{children}</main>
+            <main className="flex-1">{children}</main>
             <SiteFooter />
           </div>
         </Providers>
