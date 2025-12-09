@@ -68,7 +68,21 @@ export default function PrimaryNav({ user }: Props) {
       <SignOutButton />
     </div>
   ) : (
-    <Link className="text-red-600 hover:underline" href="/auth" onClick={() => setOpen(false)}>
+    <Link
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-red-700 transition-colors"
+      href="/auth"
+      onClick={() => setOpen(false)}
+    >
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      className="h-4 w-4"
+      >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14.5M9 20H5a2 2 0 01-2-2V6a2 2 0 012-2h4" />
+      </svg>
       Inicia sesión
     </Link>
   );
