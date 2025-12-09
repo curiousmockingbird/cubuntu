@@ -69,7 +69,7 @@ export default function PrimaryNav({ user }: Props) {
     </div>
   ) : (
     <Link
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-red-700 transition-colors"
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-brand text-white font-medium hover:bg-red-700 transition-colors"
       href="/auth"
       onClick={() => setOpen(false)}
     >

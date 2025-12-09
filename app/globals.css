@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Tailwind v4 design tokens */
+@theme {
+  --color-brand: #004B87;
+}
+
 @layer base {
   html, body { @apply bg-white text-slate-900; }
 }
