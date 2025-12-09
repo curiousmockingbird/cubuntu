@@ -7,10 +7,9 @@ export const metadata: Metadata = {
 
 export default function AuthPage() {
   return (
-    <section>
+    <section className="flex flex-1 flex-col justify-center">
       <h2 className="mb-4 text-2xl font-semibold">Welcome</h2>
       <AuthIntake />
     </section>
   )
 }
-

@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <div className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 pb-12 pt-6">
             <SiteHeader />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 flex flex-col">{children}</main>
             <SiteFooter />
           </div>
         </Providers>
