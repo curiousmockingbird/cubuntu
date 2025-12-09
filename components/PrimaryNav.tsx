@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SignOutButton from "./SignOutButton";
+import { usePathname } from "next/navigation";
 
 export type SimpleUser = {
   name?: string | null;
@@ -16,6 +17,15 @@ type Props = {
 
 export default function PrimaryNav({ user }: Props) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (!pathname) return false;
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  const linkClass = (href: string) =>
+    `text-red-600 hover:underline ${isActive(href) ? "md:underline" : ""}`;
 
   // Close the menu on route change (basic heuristic)
   useEffect(() => {
@@ -28,13 +38,13 @@ export default function PrimaryNav({ user }: Props) {
 
   const NavLinks = (
     <>
-      <Link className="text-red-600 hover:underline" href="/about" onClick={() => setOpen(false)}>
+      <Link className={linkClass("/about")} href="/about" onClick={() => setOpen(false)}>
         Quiémes somos
       </Link>
-      <Link className="text-red-600 hover:underline" href="/social" onClick={() => setOpen(false)}>
+      <Link className={linkClass("/social")} href="/social" onClick={() => setOpen(false)}>
         Nuestras redes
       </Link>
-      <Link className="text-red-600 hover:underline" href="/donate" onClick={() => setOpen(false)}>
+      <Link className={linkClass("/donate")} href="/donate" onClick={() => setOpen(false)}>
         Donar
       </Link>
     </>
@@ -59,7 +69,7 @@ export default function PrimaryNav({ user }: Props) {
     </div>
   ) : (
     <Link className="text-red-600 hover:underline" href="/auth" onClick={() => setOpen(false)}>
-      Sign in
+      Inicia sesión
     </Link>
   );
 
