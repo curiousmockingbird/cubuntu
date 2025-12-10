@@ -19,7 +19,7 @@ export default async function EpisodePage({ params }: Params) {
         {/* Row 1: image (left) and audio player (right) */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
           {/* Image */}
-          <div className="w-full overflow-hidden rounded-lg bg-slate-100">
+          <div className="w-full overflow-hidden rounded-lg bg-brand">
             <Image
               src={episode.image || "/images/placeholder.svg"}
               alt={episode.title}

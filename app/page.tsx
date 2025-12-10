@@ -36,7 +36,7 @@ export default async function HomePage() {
             {/* Cover */}
             <Link
               href={`/episodes/${ep.slug}`}
-              className="relative overflow-hidden rounded-lg bg-slate-100 w-full md:w-auto"
+              className="relative overflow-hidden rounded-lg bg-brand w-full md:w-auto"
             >
               <Image
                 src={ep.image || "/images/placeholder.svg"}
