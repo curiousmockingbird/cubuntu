@@ -31,7 +31,7 @@ export default async function HomePage() {
 
       {/* List-style layout inspired by the screenshot */}
       <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
-        {episodes.map((ep) => (
+        {episodes.map((ep, idx) => (
           <article key={ep.slug} className="group flex flex-col md:flex-row gap-4 p-4 sm:p-5">
             {/* Cover */}
             <Link
@@ -46,6 +46,9 @@ export default async function HomePage() {
                 sizes="(max-width: 768px) 100vw, 192px"
                 className="h-40 w-full md:h-32 md:w-32 object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]"
               />
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 px-2 py-1 text-xs sm:text-sm font-medium text-white bg-brand text-center">
+                {`Episodio ${episodes.length - idx}`}
+              </span>
             </Link>
 
             {/* Main content */}
