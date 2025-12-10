@@ -3,6 +3,7 @@ import Image from "next/image";
 import AudioPlayer from "../components/AudioPlayer";
 import { getAllEpisodes } from "../lib/episodes";
 import AudioDuration from "../components/AudioDuration";
+import ShareButton from "../components/ShareButton";
 
 export const revalidate = 3600;
 
@@ -85,15 +86,7 @@ export default async function HomePage() {
 
             {/* Actions / Play */}
             <div className="flex shrink-0 md:flex-col items-center md:items-end justify-between gap-3 mt-3 md:mt-0">
-              {/* Add button placeholder */}
-              <button
-                type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-red-700 hover:bg-slate-50"
-                aria-label="Save episode"
-                title="Save episode"
-              >
-                +
-              </button>
+              <ShareButton href={`/episodes/${ep.slug}`} label="Share episode" />
 
               <div className="w-full md:w-auto md:self-end">
                 <AudioPlayer src={ep.audioUrl} compact />
