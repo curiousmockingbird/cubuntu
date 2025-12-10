@@ -80,13 +80,13 @@ export default async function HomePage() {
                 <span>⏱️ <AudioDuration src={ep.audioUrl} /></span>
                 <span className="hidden sm:block">•</span>
                 {/* Decorative thin progress bar for visual parity */}
-                <span className="hidden sm:block h-1 w-28 rounded bg-slate-200" aria-hidden />
+                {/* <span className="hidden sm:block h-1 w-28 rounded bg-slate-200" aria-hidden /> */}
+              <ShareButton href={`/episodes/${ep.slug}`} label="Share episode" />
               </div>
             </div>
 
             {/* Actions / Play */}
             <div className="flex shrink-0 md:flex-col items-center md:items-end justify-between gap-3 mt-3 md:mt-0">
-              <ShareButton href={`/episodes/${ep.slug}`} label="Share episode" />
 
               <div className="w-full md:w-auto md:self-end">
                 <AudioPlayer src={ep.audioUrl} compact />
