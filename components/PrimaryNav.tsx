@@ -64,7 +64,7 @@ export default function PrimaryNav({ user }: Props) {
           {((user.name || user.email || "U") as string).charAt(0).toUpperCase()}
         </div>
       )}
-      <span className="text-slate-600">Hi, {user.name || user.email}</span>
+      <span className="text-slate-600">Hola, {user.name || user.email}</span>
       <SignOutButton />
     </div>
   ) : (
