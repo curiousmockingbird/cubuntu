@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import SiteHeader from '../components/SiteHeader';
 import Providers from './providers';
 import SiteFooter from '../components/SiteFooter';
+import { Analytics } from '@vercel/analytics/next';
 
 const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -40,7 +41,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <div className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 pb-12 pt-6">
             <SiteHeader />
-            <main className="flex-1 flex flex-col">{children}</main>
+            <main className="flex-1 flex flex-col">
+              {children}
+              <Analytics />
+              </main>
             <SiteFooter />
           </div>
         </Providers>

@@ -122,7 +122,6 @@ Set these in `.env` (see `.env.example`), based on the code paths:
 
 ## Notes & Follow-ups
 
-- A legacy `auth.ts` exists at the repo root, but the live NextAuth config is in `lib/auth.ts` with its route in `app/api/auth/[...nextauth]/route.ts`. Consider removing or updating the root file to avoid confusion.
 - Update `.env.example` with all environment keys if you want a complete template for contributors.
 - Replace placeholder links/content for social and donate pages; update branding as desired.
 
