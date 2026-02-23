@@ -13,6 +13,7 @@ export type Episode = {
 };
 
 const EPISODES_DIR = path.join(process.cwd(), 'data', 'episodes');
+const DISABLED_FILE = path.join(process.cwd(), 'data', 'episodes.disabled.json');
 
 function readEpisodeFile(filePath: string): Episode | null {
   try {
@@ -25,6 +26,19 @@ function readEpisodeFile(filePath: string): Episode | null {
 }
 
 export async function getAllEpisodes(): Promise<Episode[]> {
+  // Load optional list of disabled slugs for easy temporary hiding
+  let disabled: Set<string> = new Set();
+  try {
+    if (fs.existsSync(DISABLED_FILE)) {
+      const raw = fs.readFileSync(DISABLED_FILE, 'utf8');
+      const list = JSON.parse(raw) as unknown;
+      if (Array.isArray(list)) {
+        disabled = new Set(list.filter((s): s is string => typeof s === 'string'));
+      }
+    }
+  } catch {
+    // ignore malformed or missing file
+  }
   const files = fs
     .readdirSync(EPISODES_DIR)
     .filter((f) => f.endsWith('.json'));
@@ -32,6 +46,8 @@ export async function getAllEpisodes(): Promise<Episode[]> {
   const episodes = files
     .map((f) => readEpisodeFile(path.join(EPISODES_DIR, f)))
     .filter((e): e is Episode => !!e)
+    // filter out disabled slugs
+    .filter((e) => !disabled.has(e.slug))
     // sort by date desc by default
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
