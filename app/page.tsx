@@ -20,7 +20,7 @@ export default async function HomePage() {
       {/* Hero image at the top */}
       <div className="relative mb-8 overflow-hidden rounded-xl border border-slate-200 h-40 sm:h-56 md:h-72">
         <Image
-          src="/images/hero.svg"
+          src="/images/satelite.jpg"
           alt="Podcast hero"
           fill
           priority
