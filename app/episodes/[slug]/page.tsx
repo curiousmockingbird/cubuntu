@@ -41,7 +41,7 @@ export default async function EpisodePage({ params }: Params) {
         {/* Row 2: title, meta, description, show notes */}
         <div className="mt-6">
           <h1 className="text-2xl font-semibold tracking-tight">
-            {episode.title}
+            <RichText text={episode.title} />
           </h1>
 
           {/* Meta badges */}
@@ -56,7 +56,9 @@ export default async function EpisodePage({ params }: Params) {
 
           {/* Description + show notes */}
           <section className="mt-4 space-y-2 text-slate-700">
-            <p>{episode.description}</p>
+            <p>
+              <RichText text={episode.description} />
+            </p>
 
             {episode.showNotes &&
               episode.showNotes.map((p, i) => (

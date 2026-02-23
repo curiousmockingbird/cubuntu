@@ -4,6 +4,7 @@ import AudioPlayer from "../components/AudioPlayer";
 import { getAllEpisodes } from "../lib/episodes";
 import AudioDuration from "../components/AudioDuration";
 import ShareButton from "../components/ShareButton";
+import RichText from "../components/RichText";
 
 export const revalidate = 3600;
 
@@ -19,7 +20,7 @@ export default async function HomePage() {
       {/* Hero image at the top */}
       <div className="relative mb-8 overflow-hidden rounded-xl border border-slate-200 h-40 sm:h-56 md:h-72">
         <Image
-          src="/images/arte.png"
+          src="/images/hero.svg"
           alt="Podcast hero"
           fill
           priority
@@ -59,13 +60,13 @@ export default async function HomePage() {
                   className="text-slate-900 hover:text-blue-700"
                   href={`/episodes/${ep.slug}`}
                 >
-                  {ep.title}
+                  <RichText text={ep.title} />
                 </Link>
               </h3>
 
               {/* Description (clamped to 3 lines) + Details link */}
               <p className="mt-2 text-slate-700 text-sm sm:text-base line-clamp-3">
-                {ep.description}
+                <RichText text={ep.description} />
               </p>
               <div className="mt-1">
                 <Link href={`/episodes/${ep.slug}`} className="text-blue-600 hover:underline text-sm">

@@ -40,6 +40,7 @@ This document provides a concise overview of the repository: what it is, how itâ
 - List page (`app/page.tsx`) shows all episodes and duration via a lightweight `AudioDuration` probe.
 - Detail page (`app/episodes/[slug]/page.tsx`) shows cover, player, notes, and the comments panel.
 - RSS feed: `GET /api/rss` builds a podcast RSS from the same JSON data.
+ - Inline formatting: use `**bold**`, `*italic*` or `_italic_`, and `__underline__` inside `description` and `showNotes` strings. Titles may also include these markers. The site renders them; RSS strips markers to plain text.
 
 ### Audio
 
@@ -124,4 +125,3 @@ Set these in `.env` (see `.env.example`), based on the code paths:
 
 - Update `.env.example` with all environment keys if you want a complete template for contributors.
 - Replace placeholder links/content for social and donate pages; update branding as desired.
-

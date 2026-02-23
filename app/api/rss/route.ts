@@ -29,15 +29,25 @@ function absoluteUrl(site: string, url: string): string {
   }
 }
 
+// Remove lightweight inline formatting markers from description text
+function stripFormatting(s: string): string {
+  if (!s) return s;
+  return s
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_([^_]+)_/g, '$1');
+}
+
 function buildRss({ site, episodes }: { site: string; episodes: Awaited<ReturnType<typeof getAllEpisodes>> }) {
   const items = episodes
     .map(
       (e) => `
       <item>
-        <title>${esc(e.title)}</title>
+        <title>${esc(stripFormatting(e.title))}</title>
         <link>${site}/episodes/${e.slug}</link>
         <guid>${site}/episodes/${e.slug}</guid>
-        <description>${esc(e.description)}</description>
+        <description>${esc(stripFormatting(e.description))}</description>
         <pubDate>${new Date(e.date).toUTCString()}</pubDate>
         <enclosure url="${esc(absoluteUrl(site, e.audioUrl))}" type="audio/mpeg" />
       </item>

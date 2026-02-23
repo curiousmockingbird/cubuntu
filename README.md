@@ -39,6 +39,11 @@ Notes
 Episodes data (JSON)
 - Each episode lives in `data/episodes/*.json` and is loaded server-side via `lib/episodes.ts`.
 - To add a new episode, create a new JSON file with the same shape as the examples.
+ - Inline formatting: you can add simple emphasis inside `title`, `description`, or `showNotes` strings:
+   - Bold: `**bold**`
+   - Italic: `*italic*` or `_italic_`
+   - Underline: `__underline__` (non-standard, supported by the app)
+   These render on the website; the RSS feed strips these markers to plain text.
 
 Git LFS (for audio)
 - This repo tracks audio files with Git LFS via `.gitattributes`.
