@@ -88,9 +88,17 @@ export default function PrimaryNav({ user }: Props) {
   );
 
   return (
-    <nav className="mt-2" aria-label="Primary">
+    <nav aria-label="Primary">
       {/* Desktop */}
       <div className="hidden md:flex items-center gap-4">
+        <Link href="/" className="inline-flex items-center " aria-label="Cubuntu home">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/hero.svg"
+            alt="Cubuntu logo"
+            className="h-48 w-auto "
+          />
+        </Link>
         {NavLinks}
         <span className="flex-1" />
         {UserArea}

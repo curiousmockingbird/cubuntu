@@ -7,13 +7,13 @@ export default async function SiteHeader() {
   const session = await getServerSession(authOptions)
   const user = (session?.user ?? null) as SimpleUser
   return (
-    <header className="mb-6">
+    <header >
       <section className='flex flex-col items-center'>
-      <h1 className="mb-1 text-2xl font-semibold">
+      {/* <h1 className="mb-1 text-2xl font-semibold">
         <Link href="/" className="text-red-600 hover:underline">
           Cubuntu
         </Link>
-      </h1>
+      </h1> */}
       {/* <p className="muted">A minimal podcast website built with Next.js</p> */}
       </section>
       <PrimaryNav user={user} />
