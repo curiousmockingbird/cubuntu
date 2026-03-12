@@ -106,7 +106,7 @@ export default function PrimaryNav({ user }: Props) {
 
       {/* Mobile toggle */}
       <div className="md:hidden">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center gap-3">
             {/* Brand link for mobile */}
             <Link href="/" className="inline-flex items-center" aria-label="Cubuntu home">
