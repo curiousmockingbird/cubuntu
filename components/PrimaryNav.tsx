@@ -107,15 +107,14 @@ export default function PrimaryNav({ user }: Props) {
       {/* Mobile header + sheet menu */}
       <div className="md:hidden">
         <div className="flex items-center justify-between px-4 py-3 sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
-          <div className="flex items-center gap-3">
-            {/* Brand link for mobile */}
-            <Link href="/" className="inline-flex items-center" aria-label="Cubuntu home">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/hero.svg"
-                alt="Cubuntu logo"
-                className="h-10 sm:h-12 w-auto"
-              />
+          {/* Type logo for mobile */}
+          <div className="flex min-w-0 items-center flex-1 pr-3">
+            <Link
+              href="/"
+              aria-label="Cubuntu home"
+              className="block truncate text-3xl font-bold tracking-tight text-red-600 underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
+            >
+              Cubuntu
             </Link>
           </div>
           <button
