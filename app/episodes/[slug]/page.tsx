@@ -84,8 +84,9 @@ export const dynamicParams = false;
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const episode = await getEpisodeBySlug(params.slug);
   if (!episode) return {};
-  const title = `${episode.title} • Podcast MVP`;
+  const title = `${episode.title} • Cubuntu`;
   const description = episode.description;
+  const images = episode.image ? [episode.image] : undefined;
   return {
     title,
     description,
@@ -93,11 +94,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title,
       description,
       type: "article",
+      images,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images,
     },
   };
 }
