@@ -104,9 +104,9 @@ export default function PrimaryNav({ user }: Props) {
         {UserArea}
       </div>
 
-      {/* Mobile toggle */}
+      {/* Mobile header + sheet menu */}
       <div className="md:hidden">
-        <div className="flex items-center justify-between px-3 py-2">
+        <div className="flex items-center justify-between px-4 py-3 sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
           <div className="flex items-center gap-3">
             {/* Brand link for mobile */}
             <Link href="/" className="inline-flex items-center" aria-label="Cubuntu home">
@@ -114,7 +114,7 @@ export default function PrimaryNav({ user }: Props) {
               <img
                 src="/images/hero.svg"
                 alt="Cubuntu logo"
-                className="h-24 sm:h-9 w-auto"
+                className="h-10 sm:h-12 w-auto"
               />
             </Link>
           </div>
@@ -123,7 +123,7 @@ export default function PrimaryNav({ user }: Props) {
             aria-label="Toggle menu"
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white p-2 text-slate-700 shadow-sm hover:bg-slate-50"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -142,24 +142,26 @@ export default function PrimaryNav({ user }: Props) {
           </button>
         </div>
 
-        {/* Mobile menu panel (overlay) */}
         {open && (
           <div className="fixed inset-0 z-50">
             {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/20"
+              className="absolute inset-0 bg-black/30"
               onClick={() => setOpen(false)}
               aria-hidden
             />
-            {/* Aligned content within page container width */}
-            <div className="relative mx-auto max-w-4xl px-4 pt-4">
-              <div className="relative rounded-lg border border-slate-200 bg-white p-4 shadow-lg">
-                {/* Close button */}
+            {/* Full-width top sheet */}
+            <div className="absolute inset-x-0 top-0 bottom-0 bg-white shadow-lg">
+              <div className="flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,0px)+12px)] pb-3 border-b border-slate-200">
+                <Link href="/" aria-label="Cubuntu home" onClick={() => setOpen(false)} className="inline-flex items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/hero.svg" alt="Cubuntu logo" className="h-10 sm:h-12 w-auto" />
+                </Link>
                 <button
                   type="button"
                   aria-label="Close menu"
                   onClick={() => setOpen(false)}
-                  className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-red-600"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -172,12 +174,23 @@ export default function PrimaryNav({ user }: Props) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
-                <div className="flex flex-col gap-3">
-                  {NavLinks}
-                  <hr className="my-2 border-slate-200" />
-                  {UserArea}
-                </div>
               </div>
+
+              <nav className="px-4 py-2">
+                <div className="flex flex-col">
+                  <Link className="block py-3 text-lg text-red-600 hover:underline" href="/about" onClick={() => setOpen(false)}>
+                    Quiémes somos
+                  </Link>
+                  <Link className="block py-3 text-lg text-red-600 hover:underline" href="/social" onClick={() => setOpen(false)}>
+                    Nuestras redes
+                  </Link>
+                  <Link className="block py-3 text-lg text-red-600 hover:underline" href="/donate" onClick={() => setOpen(false)}>
+                    Donar
+                  </Link>
+                </div>
+                <hr className="my-4 border-slate-200" />
+                <div className="px-1">{UserArea}</div>
+              </nav>
             </div>
           </div>
         )}
