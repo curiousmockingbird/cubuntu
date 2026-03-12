@@ -108,7 +108,15 @@ export default function PrimaryNav({ user }: Props) {
       <div className="md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Keep space balanced; brand is above in header */}
+            {/* Brand link for mobile */}
+            <Link href="/" className="inline-flex items-center" aria-label="Cubuntu home">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/hero.svg"
+                alt="Cubuntu logo"
+                className="h-24 sm:h-9 w-auto"
+              />
+            </Link>
           </div>
           <button
             type="button"
