@@ -225,18 +225,22 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
                   />
                 </div>
               </div>
-              <button
+              {/* <button
                 type="button"
                 aria-label={isPlaying ? "Pausar" : "Reproducir"}
                 onClick={toggle}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50"
+                className={
+                  isPlaying
+                    ? "inline-flex h-10 w-10 items-center justify-center rounded-lg bg-green-600 text-white shadow-sm hover:bg-green-700"
+                    : "inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-white shadow-sm hover:bg-red-700"
+                }
               >
                 {isPlaying ? (
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H8v12h2V6zm6 0h-2v12h2V6z"/></svg>
                 ) : (
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7-11-7z"/></svg>
                 )}
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

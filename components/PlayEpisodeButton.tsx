@@ -12,21 +12,46 @@ type Props = {
 
 export default function PlayEpisodeButton({ src, title, image, slug, compact = false }: Props) {
   const audio = useGlobalAudio();
+  const resolveSrc = (s: string) => (/^https?:\/\//i.test(s) || s.startsWith("/")) ? s : `/${s}`;
+  const isCurrent = (() => {
+    if (!audio.current) return false;
+    if (slug && audio.current.slug) return audio.current.slug === slug;
+    if (audio.current.src) return resolveSrc(audio.current.src) === resolveSrc(src);
+    return false;
+  })();
+  const isActivePlaying = isCurrent && audio.isPlaying;
+  const label = isActivePlaying ? "Reproduciendo" : (compact ? "Reproducir" : "Escuchar ahora");
+  const className = compact
+    ? (isActivePlaying
+        ? "inline-flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100"
+        : "inline-flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100")
+    : (isActivePlaying
+        ? "inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
+        : "inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-red-700");
 
   return (
     <button
       type="button"
-      onClick={() => audio.play({ src, title, image, slug })}
-      className={compact
-        ? "inline-flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100"
-        : "inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-red-700"}
-      aria-label="Reproducir episodio"
+      onClick={() => {
+        if (isActivePlaying) {
+          audio.pause();
+        } else {
+          audio.play({ src, title, image, slug });
+        }
+      }}
+      className={className}
+      aria-label={label}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={compact ? "h-4 w-4" : "h-5 w-5"}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7-11-7z" />
-      </svg>
-      {compact ? "Reproducir" : "Escuchar ahora"}
+      {isActivePlaying ? (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={compact ? "h-4 w-4" : "h-5 w-5"}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H8v12h2V6zm6 0h-2v12h2V6z" />
+        </svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={compact ? "h-4 w-4" : "h-5 w-5"}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7-11-7z" />
+        </svg>
+      )}
+      {label}
     </button>
   );
 }
-
