@@ -53,3 +53,6 @@ Thumbs.db
 
 # Scripts
 scripts/
+ 
+# Local project documentation (kept out of VCS)
+documentation.md
