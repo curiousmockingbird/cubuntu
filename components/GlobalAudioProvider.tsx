@@ -112,13 +112,14 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
       try { if (POS_KEY && typeof window !== "undefined") localStorage.removeItem(POS_KEY); } catch {}
     };
     el.addEventListener("loadedmetadata", onLoaded);
-    el.addEventListener("canplay", restorePosition);
+    // Try restore once after the browser can play
+    el.addEventListener("canplay", restorePosition as any, { once: true } as any);
     el.addEventListener("timeupdate", onTimeUpdate);
     el.addEventListener("ended", onEnded);
     if (el.readyState >= 1) restorePosition();
     return () => {
       el.removeEventListener("loadedmetadata", onLoaded);
-      el.removeEventListener("canplay", restorePosition);
+      el.removeEventListener("canplay", restorePosition as any);
       el.removeEventListener("timeupdate", onTimeUpdate);
       el.removeEventListener("ended", onEnded);
     };
@@ -167,9 +168,14 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
         if (cleared) return;
         clear();
         try {
-          if (el.currentTime > 0 && (el.readyState < 2 || el.paused)) {
+          // If not playing after grace period, cancel resume and start from 0
+          if (el.paused || el.readyState < 2) {
             cancelRestoreRef.current = true;
-            el.currentTime = 0;
+            if (!Number.isFinite(el.currentTime) || el.currentTime < 0.01) {
+              el.currentTime = 0;
+            } else if (el.currentTime > 0) {
+              el.currentTime = 0;
+            }
             const pp = el.play();
             if (pp && typeof (pp as any).catch === 'function') (pp as any).catch(() => {});
           }
