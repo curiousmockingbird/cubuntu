@@ -37,6 +37,7 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
   const [isPlaying, setIsPlaying] = useState(false);
   const [rate, setRate] = useState(1.0);
   const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
+  const cancelRestoreRef = useRef(false);
 
   const resolveSrc = useCallback((src: string) => {
     if (/^https?:\/\//i.test(src) || src.startsWith("/")) return src;
@@ -74,6 +75,7 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
     if (!el) return;
     const restorePosition = () => {
       try {
+        if (cancelRestoreRef.current) return;
         if (!POS_KEY || typeof window === "undefined") return;
         const raw = localStorage.getItem(POS_KEY);
         const saved = raw ? parseFloat(raw) : NaN;
@@ -144,6 +146,7 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
       setCurrent(np);
       setAudioSrc(url);
     });
+    cancelRestoreRef.current = false;
     const el: HTMLAudioElement | undefined = playerRef.current?.audio?.current;
     if (!el) return;
     try {
@@ -155,6 +158,23 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
       if (el.muted || el.volume === 0) { el.muted = false; if (el.volume === 0) el.volume = 1; }
       const p = el.play();
       if (p && typeof (p as any).catch === 'function') (p as any).catch(() => {});
+
+      // Fallback: if starting from a resumed position stalls (no byte-range), retry from 0s
+      let cleared = false;
+      const clear = () => { if (cleared) return; cleared = true; try { el.removeEventListener('playing', clear); } catch {} };
+      el.addEventListener('playing', clear, { once: true } as any);
+      setTimeout(() => {
+        if (cleared) return;
+        clear();
+        try {
+          if (el.currentTime > 0 && (el.readyState < 2 || el.paused)) {
+            cancelRestoreRef.current = true;
+            el.currentTime = 0;
+            const pp = el.play();
+            if (pp && typeof (pp as any).catch === 'function') (pp as any).catch(() => {});
+          }
+        } catch {}
+      }, 1200);
       setIsPlaying(true);
     } catch {}
   }, [resolveSrc]);
