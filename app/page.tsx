@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import AudioPlayer from "../components/AudioPlayer";
+import PlayEpisodeButton from "../components/PlayEpisodeButton";
 import { getAllEpisodes } from "../lib/episodes";
 import AudioDuration from "../components/AudioDuration";
 import ShareButton from "../components/ShareButton";
@@ -90,7 +90,7 @@ export default async function HomePage() {
             <div className="flex shrink-0 md:flex-col items-center md:items-end justify-between gap-3 mt-3 md:mt-0">
 
               <div className="w-full md:w-auto md:self-end">
-                <AudioPlayer src={ep.audioUrl} compact />
+                <PlayEpisodeButton src={ep.audioUrl} title={ep.title} image={ep.image || "/images/placeholder.svg"} slug={ep.slug} compact />
               </div>
             </div>
           </article>

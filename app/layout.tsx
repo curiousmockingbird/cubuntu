@@ -3,6 +3,7 @@ import 'react-h5-audio-player/lib/styles.css';
 import type { Metadata } from 'next';
 import SiteHeader from '../components/SiteHeader';
 import Providers from './providers';
+import GlobalAudioProvider from '../components/GlobalAudioProvider';
 import SiteFooter from '../components/SiteFooter';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -49,14 +50,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
-          <div className="mx-auto flex min-h-screen max-w-4xl flex-col px-2 pb-12 ">
-            <SiteHeader />
-            <main className="flex-1 flex flex-col">
-              {children}
-              <Analytics />
-              </main>
-            <SiteFooter />
-          </div>
+          <GlobalAudioProvider>
+            <div className="mx-auto flex min-h-screen max-w-4xl flex-col px-2 pb-24 ">
+              <SiteHeader />
+              <main className="flex-1 flex flex-col">
+                {children}
+                <Analytics />
+                </main>
+              <SiteFooter />
+            </div>
+          </GlobalAudioProvider>
         </Providers>
       </body>
     </html>

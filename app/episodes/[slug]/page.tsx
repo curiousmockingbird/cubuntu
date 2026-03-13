@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
-import AudioPlayer from "../../../components/AudioPlayer";
+import PlayEpisodeButton from "../../../components/PlayEpisodeButton";
 import AudioDuration from "../../../components/AudioDuration";
 import RichText from "../../../components/RichText";
 import Comments from "../../../components/Comments";
@@ -30,10 +30,10 @@ export default async function EpisodePage({ params }: Params) {
             />
           </div>
 
-          {/* Audio player vertically centered and full width*/}
+          {/* Play control (global player continues across pages) */}
           <div className="flex items-center">
-            <div className="w-full">
-              <AudioPlayer src={episode.audioUrl} />
+            <div className="w-full flex justify-start">
+              <PlayEpisodeButton src={episode.audioUrl} title={episode.title} image={episode.image || "/images/placeholder.svg"} slug={params.slug} />
             </div>
           </div>
         </div>
