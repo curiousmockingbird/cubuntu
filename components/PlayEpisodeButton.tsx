@@ -33,8 +33,8 @@ export default function PlayEpisodeButton({ src, title, image, slug, compact = f
     <button
       type="button"
       onClick={() => {
-        if (isActivePlaying) {
-          audio.pause();
+        if (isCurrent) {
+          audio.toggle();
         } else {
           audio.play({ src, title, image, slug });
         }

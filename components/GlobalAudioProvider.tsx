@@ -147,8 +147,10 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
     const el: HTMLAudioElement | undefined = playerRef.current?.audio?.current;
     if (!el) return;
     try {
-      if (el.src !== url) {
-        el.src = url;
+      const abs = typeof window !== 'undefined' ? new URL(url, window.location.origin).href : url;
+      const cur = el.currentSrc || el.src;
+      if (!cur || cur !== abs) {
+        el.src = abs;
       }
       if (el.muted || el.volume === 0) { el.muted = false; if (el.volume === 0) el.volume = 1; }
       const p = el.play();
@@ -166,12 +168,17 @@ export default function GlobalAudioProvider({ children }: { children: React.Reac
   const toggle = useCallback(() => {
     const el: HTMLAudioElement | undefined = playerRef.current?.audio?.current;
     if (!el) return;
-    if (el.paused) {
-      play(current as NowPlaying);
-    } else {
-      pause();
-    }
-  }, [current, pause, play]);
+    try {
+      if (el.paused) {
+        const p = el.play();
+        if (p && typeof (p as any).catch === 'function') (p as any).catch(() => {});
+        setIsPlaying(true);
+      } else {
+        el.pause();
+        setIsPlaying(false);
+      }
+    } catch {}
+  }, []);
 
   const seek = useCallback((time: number) => {
     const el: HTMLAudioElement | undefined = playerRef.current?.audio?.current;
