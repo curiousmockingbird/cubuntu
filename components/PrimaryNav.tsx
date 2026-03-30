@@ -39,7 +39,7 @@ export default function PrimaryNav({ user }: Props) {
   const NavLinks = (
     <>
       <Link className={linkClass("/about")} href="/about" onClick={() => setOpen(false)}>
-        Quiémes somos
+        Quiénes somos
       </Link>
       <Link className={linkClass("/social")} href="/social" onClick={() => setOpen(false)}>
         Nuestras redes
@@ -178,7 +178,7 @@ export default function PrimaryNav({ user }: Props) {
               <nav className="px-4 py-2">
                 <div className="flex flex-col">
                   <Link className="block py-3 text-lg text-red-600 hover:underline" href="/about" onClick={() => setOpen(false)}>
-                    Quiémes somos
+                    Quiénes somos
                   </Link>
                   <Link className="block py-3 text-lg text-red-600 hover:underline" href="/social" onClick={() => setOpen(false)}>
                     Nuestras redes
