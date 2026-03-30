@@ -32,7 +32,7 @@ export default async function EpisodePage({ params }: Params) {
 
           {/* Play control (global player continues across pages) */}
           <div className="flex items-center">
-            <div className="w-full flex justify-start">
+            <div className="w-full flex justify-center">
               <PlayEpisodeButton src={episode.audioUrl} title={episode.title} image={episode.image || "/images/placeholder.svg"} slug={params.slug} />
             </div>
           </div>
