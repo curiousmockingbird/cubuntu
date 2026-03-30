@@ -20,14 +20,14 @@ export default function PlayEpisodeButton({ src, title, image, slug, compact = f
     return false;
   })();
   const isActivePlaying = isCurrent && audio.isPlaying;
-  const label = isActivePlaying ? "Reproduciendo" : (compact ? "Reproducir" : "Escuchar ahora");
+  // const label = isActivePlaying ? "Reproduciendo" : (compact ? "Reproducir" : "Escuchar ahora");
   const className = compact
     ? (isActivePlaying
-        ? "inline-flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100"
-        : "inline-flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100")
+        ? "inline-flex items-center justify-center rounded-full bg-green-600 text-white hover:bg-green-700 h-9 w-9"
+        : "inline-flex items-center justify-center rounded-full bg-brand text-white hover:bg-red-700 h-9 w-9")
     : (isActivePlaying
-        ? "inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
-        : "inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-red-700");
+        ? "inline-flex items-center justify-center rounded-full bg-green-600 text-white hover:bg-green-700 h-11 w-11"
+        : "inline-flex items-center justify-center rounded-full bg-brand text-white hover:bg-red-700 h-11 w-11");
 
   return (
     <button
@@ -40,7 +40,7 @@ export default function PlayEpisodeButton({ src, title, image, slug, compact = f
         }
       }}
       className={className}
-      aria-label={label}
+      // aria-label={label}
     >
       {isActivePlaying ? (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={compact ? "h-4 w-4" : "h-5 w-5"}>
@@ -51,7 +51,7 @@ export default function PlayEpisodeButton({ src, title, image, slug, compact = f
           <path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7-11-7z" />
         </svg>
       )}
-      {label}
+      {/* {label} */}
     </button>
   );
 }

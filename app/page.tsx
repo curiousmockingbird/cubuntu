@@ -35,6 +35,7 @@ export default async function HomePage() {
       <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
         {episodes.map((ep, idx) => (
           <article key={ep.slug} className="group flex flex-col md:flex-row gap-4 p-4 sm:p-5">
+
             {/* Cover */}
             <Link
               href={`/episodes/${ep.slug}`}
@@ -52,6 +53,14 @@ export default async function HomePage() {
                 {`Episodio ${episodes.length - idx}`}
               </span>
             </Link>
+
+            {/* Actions / Play */}
+            <div className="flex shrink-0 md:flex-col items-center md:items-end justify-between md:justify-center gap-3 mt-3 md:mt-0">
+
+              <div className="w-full flex justify-center md:w-auto md:self-end">
+                <PlayEpisodeButton src={ep.audioUrl} title={ep.title} image={ep.image || "/images/placeholder.svg"} slug={ep.slug}  />
+              </div>
+            </div>
 
             {/* Main content */}
             <div className="min-w-0 flex-1">
@@ -86,13 +95,6 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Actions / Play */}
-            <div className="flex shrink-0 md:flex-col items-center md:items-end justify-between gap-3 mt-3 md:mt-0">
-
-              <div className="w-full md:w-auto md:self-end">
-                <PlayEpisodeButton src={ep.audioUrl} title={ep.title} image={ep.image || "/images/placeholder.svg"} slug={ep.slug} compact />
-              </div>
-            </div>
           </article>
         ))}
       </div>
