@@ -88,9 +88,18 @@ export default function AISearch() {
           <div className="text-xs text-slate-500">
             Modo: {result.mode === "ai" ? "Embeddings (AI)" : "Fallback por palabras clave"}
           </div>
-          {result.answer && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-slate-800">
-              {result.answer}
+          {withAnswer && (
+            <div
+              className={
+                result.answer
+                  ? "rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-slate-800"
+                  : "rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-900"
+              }
+            >
+              {result.answer ||
+                (result.hits.length === 0
+                  ? "No se pudo generar una respuesta: no se encontraron resultados para tu consulta."
+                  : "No se pudo generar una respuesta asistida (verifica la configuración de OPENAI_API_KEY).")}
             </div>
           )}
           <ul className="space-y-2">
