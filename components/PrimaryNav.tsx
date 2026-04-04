@@ -27,7 +27,9 @@ export default function PrimaryNav({ user }: Props) {
   };
 
   const linkClass = (href: string) =>
-    `text-red-600 hover:underline ${isActive(href) ? "md:underline" : ""}`;
+    `text-red-600 hover:underline whitespace-nowrap text-sm ${
+      isActive(href) ? "md:underline" : ""
+    }`;
 
   // Close the menu on route change (basic heuristic)
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function PrimaryNav({ user }: Props) {
         setAiOpen(true);
         setOpen(false);
       }}
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-red-600 text-red-600 font-medium hover:bg-red-50 transition-colors"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-600 text-red-600 font-medium hover:bg-red-50 transition-colors text-sm whitespace-nowrap"
     >
       Ask the AI
     </button>
@@ -67,9 +69,9 @@ export default function PrimaryNav({ user }: Props) {
   );
 
   const UserArea = user ? (
-    <div className="flex items-center gap-3 text-sm">
+    <div className="flex items-center gap-3 text-sm whitespace-nowrap">
       {AskAIButton}
-      <div className="flex items-center gap-3 text-sm">
+      <div className="flex items-center gap-3 text-sm whitespace-nowrap">
         {user.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -82,15 +84,15 @@ export default function PrimaryNav({ user }: Props) {
             {((user.name || user.email || "U") as string).charAt(0).toUpperCase()}
           </div>
         )}
-        <span className="text-slate-600">Hola, {user.name || user.email}</span>
+        <span className="text-slate-600 whitespace-nowrap">Hola, {user.name || user.email}</span>
         <SignOutButton />
       </div>
     </div>
   ) : (
-    <div className="inline-flex items-center gap-2">
+    <div className="inline-flex items-center gap-2 whitespace-nowrap">
       {AskAIButton}
       <Link
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-brand text-white font-medium hover:bg-red-700 transition-colors"
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-brand text-white font-medium hover:bg-red-700 transition-colors text-sm whitespace-nowrap"
         href="/auth"
         onClick={() => setOpen(false)}
       >
@@ -113,7 +115,7 @@ export default function PrimaryNav({ user }: Props) {
     <>
       <nav aria-label="Primary">
         {/* Desktop */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4 flex-nowrap">
           <Link href="/" className="inline-flex items-center " aria-label="Cubuntu home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
