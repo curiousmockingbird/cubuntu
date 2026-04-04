@@ -17,6 +17,10 @@ type ApiResponse = {
   answer: string | null;
 };
 
+function hasSourceCitation(answer: string | null): boolean {
+  return !!answer && /\[\d+\]/.test(answer);
+}
+
 export default function AISearch() {
   const [query, setQuery] = useState("");
   const [withAnswer, setWithAnswer] = useState(true);
@@ -91,7 +95,7 @@ export default function AISearch() {
           {withAnswer && (
             <div
               className={
-                result.answer
+                result.answer && hasSourceCitation(result.answer)
                   ? "rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-slate-800"
                   : "rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-900"
               }
