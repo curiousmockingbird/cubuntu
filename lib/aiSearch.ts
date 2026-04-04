@@ -32,6 +32,22 @@ const CACHE_TTL_MS = 30 * 60 * 1000;
 
 const embeddingCache = new Map<string, { value: number[]; expiresAt: number }>();
 
+function detectQuestionLanguage(query: string): string {
+  const q = query.trim().toLowerCase();
+  if (!q) return 'English';
+
+  const spanishMarkers = ['¿', '¡', 'ñ', 'á', 'é', 'í', 'ó', 'ú', ' el ', ' la ', ' de ', ' que ', ' y '];
+  const englishMarkers = [' the ', ' and ', ' what ', ' how ', ' is ', ' are ', ' in '];
+
+  const normalized = ` ${q} `;
+  const spanishScore = spanishMarkers.reduce((acc, marker) => acc + (normalized.includes(marker) ? 1 : 0), 0);
+  const englishScore = englishMarkers.reduce((acc, marker) => acc + (normalized.includes(marker) ? 1 : 0), 0);
+
+  if (spanishScore > englishScore) return 'Spanish';
+  if (englishScore > spanishScore) return 'English';
+  return 'the same language as the user question';
+}
+
 function toChunks(input: string, chunkSize = 800): string[] {
   const text = input.replace(/\s+/g, ' ').trim();
   if (!text) return [];
@@ -176,6 +192,7 @@ export async function searchEpisodes(query: string, topK = 5): Promise<{ mode: '
 export async function generateGroundedAnswer(query: string, hits: SearchHit[]): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey || hits.length === 0) return null;
+  const responseLanguage = detectQuestionLanguage(query);
 
   const context = hits
     .map(
@@ -197,14 +214,15 @@ export async function generateGroundedAnswer(query: string, hits: SearchHit[]): 
         {
           role: 'system',
           content:
-            'You are a podcast search assistant. Only answer using the provided sources. If insufficient info, say so briefly.',
+            'You are a podcast search assistant. Only answer using the provided sources. If insufficient info, say so briefly. You must respond only in the requested answer language.',
         },
         {
           role: 'user',
           content:
             `Question: ${query}\n\n` +
+            `Answer language: ${responseLanguage}\n\n` +
             `Sources:\n${context}\n\n` +
-            'Return a concise answer in the same language as the question and cite source numbers in brackets like [1].',
+            'Return a concise answer and cite source numbers in brackets like [1]. Never switch to another language.',
         },
       ],
     }),

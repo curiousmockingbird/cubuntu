@@ -5,7 +5,6 @@ import { getAllEpisodes } from "../lib/episodes";
 import AudioDuration from "../components/AudioDuration";
 import ShareButton from "../components/ShareButton";
 import RichText from "../components/RichText";
-import AISearch from "../components/AISearch";
 
 export const revalidate = 3600;
 
@@ -18,7 +17,6 @@ export default async function HomePage() {
   const episodes = await getAllEpisodes();
   return (
     <section className="home-page">
-      <AISearch />
       {/* Hero image at the top */}
       <div className="relative mb-8 overflow-hidden rounded-xl border border-slate-200 h-40 sm:h-56 md:h-72">
         <Image
