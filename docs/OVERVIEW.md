@@ -7,6 +7,7 @@ This document provides a concise overview of the repository: what it is, how itâ
 - Minimal podcast site built with Next.js App Router, TypeScript, and Tailwind.
 - Lists episodes from local JSON, plays audio in-browser, and exposes an RSS feed.
 - Includes authentication (email/password, Google), Prisma/PostgreSQL, and realâ€‘time comments via Pusher.
+- Includes AI-assisted episode discovery ("Ask the podcast") with semantic search and optional grounded answers.
 
 ## Tech Stack
 
@@ -64,6 +65,12 @@ This document provides a concise overview of the repository: what it is, how itâ
 - Model: threaded `Comment` with a self-relation in Prisma.
 - UI: `components/Comments.tsx` side panel with optimistic updates and real-time updates via a Pusher channel (`comments-{slug}`).
 
+### AI Search ("Ask the podcast")
+
+- API: `POST /api/ai/search` accepts a natural-language query and returns ranked episode snippets.
+- Uses OpenAI embeddings when `OPENAI_API_KEY` is present; otherwise falls back to keyword matching so local development still works.
+- Optional answer synthesis mode generates a grounded summary using the retrieved snippets as context.
+
 ### SEO & PWA
 
 - `app/sitemap.ts` exports a dynamic sitemap including episode pages.
@@ -91,6 +98,10 @@ Set these in `.env` (see `.env.example`), based on the code paths:
   - `RESEND_FROM_EMAIL` (e.g., `Podcast <no-reply@yourdomain.com>`) 
 - Site URL (canonical, RSS)
   - `SITE_URL` or `NEXT_PUBLIC_SITE_URL`
+- AI Search (optional)
+  - `OPENAI_API_KEY`
+  - `AI_EMBEDDING_MODEL` (default `text-embedding-3-small`)
+  - `AI_ANSWER_MODEL` (default `gpt-4o-mini`)
 
 ## Running Locally
 
