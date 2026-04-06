@@ -32,22 +32,6 @@ const CACHE_TTL_MS = 30 * 60 * 1000;
 
 const embeddingCache = new Map<string, { value: number[]; expiresAt: number }>();
 
-function detectQuestionLanguage(query: string): string {
-  const q = query.trim().toLowerCase();
-  if (!q) return 'English';
-
-  const spanishMarkers = ['¿', '¡', 'ñ', 'á', 'é', 'í', 'ó', 'ú', ' el ', ' la ', ' de ', ' que ', ' y '];
-  const englishMarkers = [' the ', ' and ', ' what ', ' how ', ' is ', ' are ', ' in '];
-
-  const normalized = ` ${q} `;
-  const spanishScore = spanishMarkers.reduce((acc, marker) => acc + (normalized.includes(marker) ? 1 : 0), 0);
-  const englishScore = englishMarkers.reduce((acc, marker) => acc + (normalized.includes(marker) ? 1 : 0), 0);
-
-  if (spanishScore > englishScore) return 'Spanish';
-  if (englishScore > spanishScore) return 'English';
-  return 'the same language as the user question';
-}
-
 function toChunks(input: string, chunkSize = 800): string[] {
   const text = input.replace(/\s+/g, ' ').trim();
   if (!text) return [];
@@ -56,20 +40,6 @@ function toChunks(input: string, chunkSize = 800): string[] {
     chunks.push(text.slice(i, i + chunkSize));
   }
   return chunks;
-}
-
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length !== b.length || a.length === 0) return 0;
-  let dot = 0;
-  let normA = 0;
-  let normB = 0;
-  for (let i = 0; i < a.length; i += 1) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  if (normA === 0 || normB === 0) return 0;
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
 function makeDocuments(episodes: Awaited<ReturnType<typeof getAllEpisodes>>): SearchDocument[] {
@@ -96,7 +66,7 @@ async function fetchEmbeddings(texts: string[], apiKey: string): Promise<number[
     const found = embeddingCache.get(t);
     return !found || found.expiresAt <= now;
   });
-
+  
   if (uncached.length > 0) {
     const res = await fetch('https://api.openai.com/v1/embeddings', {
       method: 'POST',
@@ -122,7 +92,7 @@ async function fetchEmbeddings(texts: string[], apiKey: string): Promise<number[
       embeddingCache.set(text, { value: embedding, expiresAt: now + CACHE_TTL_MS });
     }
   }
-
+  
   return texts.map((t) => embeddingCache.get(t)?.value || []);
 }
 
@@ -153,6 +123,21 @@ function simpleFallbackSearch(query: string, docs: SearchDocument[], topK: numbe
   }));
 }
 
+function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length || a.length === 0) return 0;
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  if (normA === 0 || normB === 0) return 0;
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+
 export async function searchEpisodes(query: string, topK = 5): Promise<{ mode: 'ai' | 'fallback'; hits: SearchHit[] }> {
   const q = query.trim();
   if (!q) return { mode: 'fallback', hits: [] };
@@ -162,6 +147,7 @@ export async function searchEpisodes(query: string, topK = 5): Promise<{ mode: '
   if (docs.length === 0) return { mode: 'fallback', hits: [] };
 
   const apiKey = process.env.OPENAI_API_KEY;
+
   if (!apiKey) {
     return { mode: 'fallback', hits: simpleFallbackSearch(q, docs, topK) };
   }
@@ -189,6 +175,22 @@ export async function searchEpisodes(query: string, topK = 5): Promise<{ mode: '
   return { mode: 'ai', hits: ranked };
 }
 
+function detectQuestionLanguage(query: string): string {
+  const q = query.trim().toLowerCase();
+  if (!q) return 'English';
+
+  const spanishMarkers = ['¿', '¡', 'ñ', 'á', 'é', 'í', 'ó', 'ú', ' el ', ' la ', ' de ', ' que ', ' y '];
+  const englishMarkers = [' the ', ' and ', ' what ', ' how ', ' is ', ' are ', ' in '];
+
+  const normalized = ` ${q} `;
+  const spanishScore = spanishMarkers.reduce((acc, marker) => acc + (normalized.includes(marker) ? 1 : 0), 0);
+  const englishScore = englishMarkers.reduce((acc, marker) => acc + (normalized.includes(marker) ? 1 : 0), 0);
+
+  if (spanishScore > englishScore) return 'Spanish';
+  if (englishScore > spanishScore) return 'English';
+  return 'the same language as the user question';
+}
+
 export async function generateGroundedAnswer(query: string, hits: SearchHit[]): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey || hits.length === 0) return null;
@@ -214,7 +216,7 @@ export async function generateGroundedAnswer(query: string, hits: SearchHit[]): 
         {
           role: 'system',
           content:
-            'You are a podcast search assistant. Only answer using the provided sources. If insufficient info, say so briefly. You must respond only in the requested answer language.',
+            'You are a podcast search assistant. The name of the podcast is Cubuntu. Only answer using the provided sources. If insufficient info, say so briefly. You must respond only in the requested answer language.',
         },
         {
           role: 'user',

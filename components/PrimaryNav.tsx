@@ -5,6 +5,7 @@ import Link from "next/link";
 import SignOutButton from "./SignOutButton";
 import { usePathname } from "next/navigation";
 import AISearch from "./AISearch";
+import { BsStars } from "react-icons/bs";
 
 export type SimpleUser = {
   name?: string | null;
@@ -50,6 +51,7 @@ export default function PrimaryNav({ user }: Props) {
       }}
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-600 text-red-600 font-medium hover:bg-red-50 transition-colors text-sm whitespace-nowrap"
     >
+      <BsStars className="h-4 w-4" aria-hidden />
       Ask the AI
     </button>
   );
@@ -222,7 +224,7 @@ export default function PrimaryNav({ user }: Props) {
       </nav>
 
       {aiOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setAiOpen(false)} aria-hidden />
           <div className="relative z-10 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-end mb-2">
