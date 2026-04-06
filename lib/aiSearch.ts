@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { getAllEpisodes } from './episodes';
 
 type SearchDocument = {
@@ -26,11 +29,20 @@ type OpenAIChatResponse = {
   error?: { message?: string };
 };
 
+type PersistedEmbeddingIndex = {
+  model: string;
+  updatedAt: string;
+  items: Record<string, number[]>;
+};
+
 const EMBEDDING_MODEL = process.env.AI_EMBEDDING_MODEL || 'text-embedding-3-small';
 const ANSWER_MODEL = process.env.AI_ANSWER_MODEL || 'gpt-4o-mini';
 const CACHE_TTL_MS = 30 * 60 * 1000;
+const EMBEDDING_INDEX_FILE = path.join(process.cwd(), 'data', 'ai-embedding-index.json');
 
 const embeddingCache = new Map<string, { value: number[]; expiresAt: number }>();
+let fileIndexLoaded = false;
+let fileIndexDirty = false;
 
 function detectQuestionLanguage(query: string): string {
   const q = query.trim().toLowerCase();
@@ -90,7 +102,64 @@ function makeDocuments(episodes: Awaited<ReturnType<typeof getAllEpisodes>>): Se
   return docs;
 }
 
+function loadEmbeddingIndexFromDisk(): void {
+  if (fileIndexLoaded) return;
+  fileIndexLoaded = true;
+  if (!fs.existsSync(EMBEDDING_INDEX_FILE)) return;
+
+  try {
+    const raw = fs.readFileSync(EMBEDDING_INDEX_FILE, 'utf8');
+    const parsed = JSON.parse(raw) as PersistedEmbeddingIndex;
+    if (!parsed || parsed.model !== EMBEDDING_MODEL || !parsed.items) return;
+
+    const now = Date.now();
+    Object.entries(parsed.items).forEach(([text, value]) => {
+      if (!Array.isArray(value) || value.length === 0) return;
+      embeddingCache.set(text, { value, expiresAt: now + CACHE_TTL_MS });
+    });
+  } catch {
+    // ignore malformed embedding index and rebuild lazily
+  }
+}
+
+function saveEmbeddingIndexToDisk(): void {
+  if (!fileIndexDirty) return;
+
+  const items: Record<string, number[]> = {};
+  embeddingCache.forEach((entry, text) => {
+    if (entry.value.length > 0) {
+      items[text] = entry.value;
+    }
+  });
+
+  const payload: PersistedEmbeddingIndex = {
+    model: EMBEDDING_MODEL,
+    updatedAt: new Date().toISOString(),
+    items,
+  };
+
+  const dir = path.dirname(EMBEDDING_INDEX_FILE);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(EMBEDDING_INDEX_FILE, JSON.stringify(payload));
+  fileIndexDirty = false;
+}
+
+function promoteCachedEmbeddings(texts: string[]): void {
+  const now = Date.now();
+  texts.forEach((text) => {
+    const found = embeddingCache.get(text);
+    if (!found || found.value.length === 0) return;
+    found.expiresAt = now + CACHE_TTL_MS;
+    embeddingCache.set(text, found);
+  });
+}
+
 async function fetchEmbeddings(texts: string[], apiKey: string): Promise<number[][]> {
+  loadEmbeddingIndexFromDisk();
+  promoteCachedEmbeddings(texts);
+
   const now = Date.now();
   const uncached = texts.filter((t) => {
     const found = embeddingCache.get(t);
@@ -120,7 +189,9 @@ async function fetchEmbeddings(texts: string[], apiKey: string): Promise<number[
       const embedding = json.data[i]?.embedding;
       if (!embedding) continue;
       embeddingCache.set(text, { value: embedding, expiresAt: now + CACHE_TTL_MS });
+      fileIndexDirty = true;
     }
+    saveEmbeddingIndexToDisk();
   }
 
   return texts.map((t) => embeddingCache.get(t)?.value || []);
