@@ -1,4 +1,5 @@
 import { getAllEpisodes } from './episodes';
+import { createHash } from 'crypto';
 
 type SearchDocument = {
   id: string;
@@ -6,6 +7,10 @@ type SearchDocument = {
   title: string;
   date: string;
   text: string;
+};
+
+type IndexedDocument = SearchDocument & {
+  embedding: number[];
 };
 
 export type SearchHit = {
@@ -31,6 +36,7 @@ const ANSWER_MODEL = process.env.AI_ANSWER_MODEL || 'gpt-4o-mini';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 
 const embeddingCache = new Map<string, { value: number[]; expiresAt: number }>();
+let indexedStore: { signature: string; docs: IndexedDocument[] } | null = null;
 
 function detectQuestionLanguage(query: string): string {
   const q = query.trim().toLowerCase();
@@ -90,6 +96,20 @@ function makeDocuments(episodes: Awaited<ReturnType<typeof getAllEpisodes>>): Se
   return docs;
 }
 
+function makeEpisodeSignature(episodes: Awaited<ReturnType<typeof getAllEpisodes>>): string {
+  const fingerprint = episodes
+    .map((ep) => ({
+      slug: ep.slug,
+      title: ep.title,
+      date: ep.date,
+      description: ep.description,
+      showNotes: ep.showNotes || [],
+    }))
+    .sort((a, b) => a.slug.localeCompare(b.slug));
+
+  return createHash('sha256').update(JSON.stringify(fingerprint)).digest('hex');
+}
+
 async function fetchEmbeddings(texts: string[], apiKey: string): Promise<number[][]> {
   const now = Date.now();
   const uncached = texts.filter((t) => {
@@ -124,6 +144,35 @@ async function fetchEmbeddings(texts: string[], apiKey: string): Promise<number[
   }
 
   return texts.map((t) => embeddingCache.get(t)?.value || []);
+}
+
+async function ensureDocumentIndex(
+  episodes: Awaited<ReturnType<typeof getAllEpisodes>>,
+  apiKey: string,
+): Promise<IndexedDocument[]> {
+  const signature = makeEpisodeSignature(episodes);
+  if (indexedStore && indexedStore.signature === signature) {
+    return indexedStore.docs;
+  }
+
+  const docs = makeDocuments(episodes);
+  if (docs.length === 0) {
+    indexedStore = { signature, docs: [] };
+    return [];
+  }
+
+  const vectors = await fetchEmbeddings(
+    docs.map((d) => d.text),
+    apiKey,
+  );
+
+  const indexedDocs = docs.map((doc, idx) => ({
+    ...doc,
+    embedding: vectors[idx] || [],
+  }));
+
+  indexedStore = { signature, docs: indexedDocs };
+  return indexedDocs;
 }
 
 function simpleFallbackSearch(query: string, docs: SearchDocument[], topK: number): SearchHit[] {
@@ -166,15 +215,13 @@ export async function searchEpisodes(query: string, topK = 5): Promise<{ mode: '
     return { mode: 'fallback', hits: simpleFallbackSearch(q, docs, topK) };
   }
 
-  const allTexts = [q, ...docs.map((d) => d.text)];
-  const vectors = await fetchEmbeddings(allTexts, apiKey);
-  const queryVec = vectors[0];
-  const docVecs = vectors.slice(1);
+  const indexedDocs = await ensureDocumentIndex(episodes, apiKey);
+  const [queryVec] = await fetchEmbeddings([q], apiKey);
 
-  const ranked = docs
-    .map((doc, idx) => ({
+  const ranked = indexedDocs
+    .map((doc) => ({
       doc,
-      score: cosineSimilarity(queryVec, docVecs[idx] || []),
+      score: cosineSimilarity(queryVec || [], doc.embedding),
     }))
     .sort((a, b) => b.score - a.score)
     .slice(0, topK)
