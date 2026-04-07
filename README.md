@@ -10,6 +10,7 @@ Features
 - Episode detail pages with show notes.
 - In-browser audio playback (no extra player library required).
  - Authentication with Auth.js (NextAuth) + Prisma (email/password via Credentials provider).
+ - AI-assisted "Ask the podcast" semantic search with optional grounded answers.
 
 Getting Started
 1) Install dependencies:
@@ -66,3 +67,12 @@ Authentication (Auth.js + Prisma)
   - Pages: `/login` and `/register`
 - Models used in `prisma/schema.prisma`: `User`, `Account`, `Session`, `VerificationToken`, `Comment`.
 - The app uses the Prisma Adapter and a Credentials provider (email+password). Passwords are hashed with bcrypt.
+
+AI Search (OpenAI + fallback)
+- New route: `POST /api/ai/search` with body `{ query: string, withAnswer?: boolean, topK?: number }`.
+- Uses embeddings + cosine similarity when `OPENAI_API_KEY` is set; otherwise falls back to keyword matching.
+- Optional answer generation uses a chat model and cites retrieved source snippets.
+- Env vars:
+  - `OPENAI_API_KEY`
+  - `AI_EMBEDDING_MODEL` (optional, default `text-embedding-3-small`)
+  - `AI_ANSWER_MODEL` (optional, default `gpt-4o-mini`)
