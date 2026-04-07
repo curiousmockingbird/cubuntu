@@ -9,10 +9,9 @@ export const metadata: Metadata = {
 export default function DonatePage() {
   return (
     <section>
-      <h2 className="mb-2 text-xl font-semibold">Donate</h2>
+      <h2 className="mb-2 text-xl font-semibold">Donar</h2>
       <p className="mb-2">
-        If you enjoy the show, consider supporting it. Your contribution helps cover
-        hosting, production, and development costs.
+        Si disfrutas el programa, considera apoyarlo. Tu contribución ayuda a cubrir los costos de hosting, producción y desarrollo.
       </p>
       <ul className="list-disc pl-6">
         <li>
@@ -31,9 +30,6 @@ export default function DonatePage() {
           </Link>
         </li>
       </ul>
-      <p className="muted mt-2">
-        Replace the links above with your preferred funding options.
-      </p>
     </section>
   );
 }

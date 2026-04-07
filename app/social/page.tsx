@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 export default function SocialPage() {
   return (
     <section>
-      <h2 className="mb-2 text-xl font-semibold">Social Media</h2>
-      <p className="mb-2">Follow the show and reach out on these platforms:</p>
+      <h2 className="mb-2 text-xl font-semibold">Redes sociales</h2>
+      <p className="mb-2">Puedes seguirnos en estas plataformas:</p>
       <ul className="list-disc pl-6">
         <li>
           <Link className="text-blue-600 hover:underline" href="#" aria-disabled>
@@ -33,9 +33,6 @@ export default function SocialPage() {
           </Link>
         </li>
       </ul>
-      <p className="muted mt-2">
-        Replace the links above with your actual profiles.
-      </p>
     </section>
   );
 }
