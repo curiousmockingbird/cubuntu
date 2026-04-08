@@ -53,7 +53,7 @@ export default function AISearch() {
 
   return (
     <section className="mb-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-      <h2 className="text-base font-semibold">Ask the podcast (AI)</h2>
+      <h2 className="text-base font-semibold">Pregúntale al podcast (AI)</h2>
       <p className="mt-1 text-sm text-slate-600">
         Busca temas en lenguaje natural y, si quieres, genera una respuesta resumida con fuentes.
       </p>

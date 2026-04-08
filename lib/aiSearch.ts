@@ -147,7 +147,8 @@ export async function searchEpisodes(query: string, topK = 5): Promise<{ mode: '
   if (docs.length === 0) return { mode: 'fallback', hits: [] };
 
   const apiKey = process.env.OPENAI_API_KEY;
-
+  
+// If no API key, or if embedding generation fails, fall back to simple keyword search
   if (!apiKey) {
     return { mode: 'fallback', hits: simpleFallbackSearch(q, docs, topK) };
   }

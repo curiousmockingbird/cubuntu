@@ -58,9 +58,9 @@ function buildRss({ site, episodes }: { site: string; episodes: Awaited<ReturnTy
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Podcast MVP</title>
+    <title>Cubuntu, el podcast</title>
     <link>${site}</link>
-    <description>A simple podcast site with in-browser audio playback.</description>
+    <description>Un podcast sobre Cuba y los cubanos</description>
     ${items}
   </channel>
 </rss>`;

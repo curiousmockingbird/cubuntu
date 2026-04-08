@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     include: { user: { select: { id: true, name: true, email: true, image: true } } },
   })
 
-  // Fire realtime event for clients subscribed to this episode's comments
+  // Fire realtime event to update clients. Best-effort, don't fail the request if this fails.
   try {
     const pusher = getPusherServer()
     await pusher.trigger(`comments-${body.slug}`, 'new-comment', created)
