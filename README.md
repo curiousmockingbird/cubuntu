@@ -76,3 +76,6 @@ AI Search (OpenAI + fallback)
   - `OPENAI_API_KEY`
   - `AI_EMBEDDING_MODEL` (optional, default `text-embedding-3-small`)
   - `AI_ANSWER_MODEL` (optional, default `gpt-4o-mini`)
+
+Interview prep
+- See `docs/INTERVIEW_WALKTHROUGH.md` for a feature-centered walkthrough script tailored for interviews.
