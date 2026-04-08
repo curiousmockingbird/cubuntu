@@ -47,7 +47,7 @@ export default function VerifySignupPage() {
       <p className={status === 'error' ? 'text-red-600' : 'text-slate-700'}>{message}</p>
       {status === 'ok' && (
         <div className="mt-4">
-          <button onClick={() => router.push('/auth')} className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white">Go to sign in</button>
+          <button onClick={() => router.push('/auth')} className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white">Inicia sesión</button>
         </div>
       )}
     </section>

@@ -13,13 +13,13 @@ export default function ForgotPasswordPage() {
     setError(null)
     setSent(null)
     const v = email.toLowerCase().trim()
-    if (!v) return setError('Enter your email')
+    if (!v) return setError('Ingresa tu correo')
     setLoading(true)
     try {
       const res = await fetch('/api/auth/forgot', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: v }) })
       const j = await res.json().catch(() => ({} as any))
-      if (!res.ok) throw new Error((j as any).error || 'Could not send reset email')
-      setSent('If an account exists for this email, a reset link has been sent.')
+      if (!res.ok) throw new Error((j as any).error || 'No se pudo enviar el correo de restablecimiento')
+      setSent('Si existe una cuenta para este correo, se ha enviado un enlace de restablecimiento.')
     } catch (err) {
       setError((err as Error).message)
     } finally {
@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <section className="max-w-md">
-      <h2 className="mb-4 text-2xl font-semibold">Reset your password</h2>
+      <h2 className="mb-4 text-2xl font-semibold">Restablece tu contraseña</h2>
       <form onSubmit={submit} className="space-y-3">
         <div>
           <label className="block text-sm mb-1" htmlFor="email">Email</label>
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
         {error && <p className="text-sm text-red-600">{error}</p>}
         {sent && <p className="text-sm text-green-700 whitespace-pre-wrap break-all">{sent}</p>}
         <button disabled={loading} className="w-full rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60" type="submit">
-          {loading ? 'Sending…' : 'Send reset link'}
+          {loading ? 'Enviando…' : 'Enviar enlace de restablecimiento'}
         </button>
       </form>
     </section>

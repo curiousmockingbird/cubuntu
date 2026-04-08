@@ -22,21 +22,21 @@ export default function AuthIntake() {
     setError(null)
     const v = email.toLowerCase().trim()
     if (!v || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-      setError('Enter a valid email')
+      setError('Ingresa un correo válido')
       return
     }
     setLoading(true)
     try {
       const res = await fetch(`/api/users/exists?email=${encodeURIComponent(v)}`)
       const j = await res.json()
-      if (!res.ok) throw new Error(j.error || 'Could not continue')
+      if (!res.ok) throw new Error(j.error || 'No se pudo continuar')
       setEmail(v)
       if (!j.exists) {
         setStage('register')
       } else if (j.hasPassword) {
         setStage('password')
       } else {
-        setError('This email is linked to Google. Use Continue with Google below.')
+        setError('Este correo está vinculado a Google. Usa "Continuar con Google" abajo.')
         setStage('email')
       }
     } catch (err) {
@@ -56,7 +56,7 @@ export default function AuthIntake() {
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button type="submit" disabled={loading} className="w-full rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60">
-            {loading ? 'Checking…' : 'Continue'}
+            {loading ? 'Verificando…' : 'Continuar'}
           </button>
         </form>
       )}
@@ -71,7 +71,7 @@ export default function AuthIntake() {
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-gray-200" />
-        <span className="text-xs text-gray-500">OR</span>
+        <span className="text-xs text-gray-500">O</span>
         <div className="h-px flex-1 bg-gray-200" />
       </div>
       <button
@@ -79,7 +79,7 @@ export default function AuthIntake() {
         onClick={() => signIn('google', { callbackUrl: '/' })}
         className="w-full rounded-md border px-4 py-2 bg-white hover:bg-gray-50"
       >
-        Continue with Google
+        Continuar con Google
       </button>
     </div>
   )
@@ -99,7 +99,7 @@ function PasswordStage({ email, onBack }: { email: string; onBack: () => void })
     if (res?.ok) {
       window.location.href = '/'
     } else {
-      setError('Invalid password')
+      setError('Contraseña inválida')
     }
   }
 
@@ -109,19 +109,19 @@ function PasswordStage({ email, onBack }: { email: string; onBack: () => void })
         <label className="block text-sm mb-1">Email</label>
         <div className="flex items-center justify-between">
           <div className="text-sm text-slate-700">{email}</div>
-          <button type="button" onClick={onBack} className="text-xs text-blue-600 hover:underline">Change</button>
+          <button type="button" onClick={onBack} className="text-xs text-blue-600 hover:underline">Cambiar</button>
         </div>
       </div>
       <div>
-        <label className="block text-sm mb-1" htmlFor="password">Password</label>
+        <label className="block text-sm mb-1" htmlFor="password">Contraseña</label>
         <input id="password" type="password" className="w-full rounded border px-3 py-2" value={password} onChange={(e) => setPassword(e.target.value)} required />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button type="submit" disabled={loading} className="w-full rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60">
-        {loading ? 'Signing in…' : 'Sign in'}
+        {loading ? 'Iniciando sesión…' : 'Iniciar sesión'}
       </button>
       <div className="text-right">
-        <a href={`/forgot`} className="text-xs text-blue-600 hover:underline">Forgot password?</a>
+        <a href={`/forgot`} className="text-xs text-blue-600 hover:underline">¿Olvidaste tu contraseña?</a>
       </div>
     </form>
   )
@@ -171,28 +171,28 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
         <div className="flex items-start gap-3">
           <div className="h-9 w-9 flex items-center justify-center rounded-full bg-blue-600 text-white text-lg">✉️</div>
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-slate-900">Check your email to verify</h3>
+            <h3 className="text-base font-semibold text-slate-900">Revisa tu correo para verificar</h3>
             <p className="mt-1 text-sm text-slate-700">
-              We sent a verification link to <br/>
+              Enviamos un enlace de verificación a <br/>
               <span className="ml-1 font-medium">{email}</span>.
-              Click the link to finish creating your account.
+              Haz clic en el enlace para terminar de crear tu cuenta.
             </p>
             <ul className="mt-3 text-sm text-slate-700 list-disc pl-5 space-y-1">
-              <li>Open your inbox and look for our message.</li>
-              <li>Check spam or promotions if you don’t see it.</li>
+              <li>Abre tu bandeja de entrada y busca nuestro mensaje.</li>
+              <li>Revisa spam o promociones si no lo ves.</li>
             </ul>
             <div className="mt-4 flex flex-wrap gap-2">
               {/* <a href="https://mail.google.com/" target="_blank" className="rounded-md border px-3 py-2 bg-white hover:bg-gray-50 text-sm">Open Gmail</a>
               <a href="https://outlook.live.com/" target="_blank" className="rounded-md border px-3 py-2 bg-white hover:bg-gray-50 text-sm">Open Outlook</a> */}
-              <button onClick={onBack} className=" text-sm text-blue-600 hover:underline">Use a different email</button>
+              <button onClick={onBack} className=" text-sm text-blue-600 hover:underline">Usar un correo diferente</button>
             </div>
           </div>
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <div className="text-xs text-slate-500">Didn’t get it? It can take a minute. You can also try again.</div>
+        <div className="text-xs text-slate-500">¿No te llegó? Puede tardar un minuto. También puedes intentarlo de nuevo.</div>
         <div>
           <button onClick={(e) => submit(e as any)} disabled={loading} className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60 text-sm">
-            {loading ? 'Resending…' : 'Resend verification email'}
+            {loading ? 'Reenviando…' : 'Reenviar correo de verificación'}
           </button>
         </div>
       </div>
@@ -205,27 +205,27 @@ function RegisterStage({ email, onBack }: { email: string; onBack: () => void })
         <label className="block text-sm mb-1">Email</label>
         <div className="flex items-center justify-between">
           <div className="text-sm text-slate-700">{email}</div>
-          <button type="button" onClick={onBack} className="text-xs text-blue-600 hover:underline">Change</button>
+          <button type="button" onClick={onBack} className="text-xs text-blue-600 hover:underline">Cambiar</button>
         </div>
       </div>
       <div>
-        <label className="block text-sm mb-1" htmlFor="name">Name</label>
+        <label className="block text-sm mb-1" htmlFor="name">Nombre</label>
         <input id="name" required minLength={2} maxLength={50} className="w-full rounded border px-3 py-2" value={name} onChange={(e) => setName(e.target.value)} />
-        <p className="text-xs text-slate-500 mt-1">2–50 characters</p>
+        <p className="text-xs text-slate-500 mt-1">2–50 caracteres</p>
       </div>
       <div>
-        <label className="block text-sm mb-1" htmlFor="username">Username (optional)</label>
+        <label className="block text-sm mb-1" htmlFor="username">Nombre de usuario (opcional)</label>
         <input id="username" minLength={3} maxLength={32} className="w-full rounded border px-3 py-2" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <p className="text-xs text-slate-500 mt-1">3–32 characters</p>
+        <p className="text-xs text-slate-500 mt-1">3–32 caracteres</p>
       </div>
       <div>
-        <label className="block text-sm mb-1" htmlFor="password">Password</label>
+        <label className="block text-sm mb-1" htmlFor="password">Contraseña</label>
         <input id="password" type="password" required className="w-full rounded border px-3 py-2" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <p className="text-xs text-slate-500 mt-1">8+ characters recommended</p>
+        <p className="text-xs text-slate-500 mt-1">Se recomiendan 8+ caracteres</p>
       </div>
       {error && <p className="text-sm text-slate-700">{error}</p>}
       <button disabled={loading} className="w-full rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-white disabled:opacity-60" type="submit">
-        {loading ? 'Sending…' : 'Create account'}
+        {loading ? 'Enviando…' : 'Crear cuenta'}
       </button>
     </form>
   )
